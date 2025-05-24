@@ -20,22 +20,31 @@ export async function PUT(
 
     // Don't allow editing sample templates
     if (templateId.startsWith('sample-')) {
-      return NextResponse.json({ 
-        error: 'Cannot edit sample templates' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Cannot edit sample templates',
+        },
+        { status: 400 }
+      );
     }
 
     // Validation
     if (!name?.trim() || !content?.trim()) {
-      return NextResponse.json({ 
-        error: 'Name and content are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Name and content are required',
+        },
+        { status: 400 }
+      );
     }
 
     if (!['UPDATE', 'EVENT', 'OFFER'].includes(postType)) {
-      return NextResponse.json({ 
-        error: 'Invalid post type. Must be UPDATE, EVENT, or OFFER' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Invalid post type. Must be UPDATE, EVENT, or OFFER',
+        },
+        { status: 400 }
+      );
     }
 
     // TODO: Once we add PostTemplate model, implement actual update
@@ -95,15 +104,14 @@ export async function PUT(
       updatedAt: new Date().toISOString(),
       creator: {
         id: session.user.id,
-        name: session.user.name || session.user.email || 'Unknown User'
-      }
+        name: session.user.name || session.user.email || 'Unknown User',
+      },
     };
 
     return NextResponse.json({
       success: true,
-      template: updatedTemplate
+      template: updatedTemplate,
     });
-
   } catch (error) {
     console.error('Error updating post template:', error);
     return NextResponse.json(
@@ -128,9 +136,12 @@ export async function DELETE(
 
     // Don't allow deleting sample templates
     if (templateId.startsWith('sample-')) {
-      return NextResponse.json({ 
-        error: 'Cannot delete sample templates' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Cannot delete sample templates',
+        },
+        { status: 400 }
+      );
     }
 
     // TODO: Once we add PostTemplate model, implement actual deletion
@@ -161,9 +172,8 @@ export async function DELETE(
     // For now, return mock success
     return NextResponse.json({
       success: true,
-      message: 'Template deleted successfully'
+      message: 'Template deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting post template:', error);
     return NextResponse.json(
@@ -171,4 +181,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

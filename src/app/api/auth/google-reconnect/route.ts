@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       authUrl: signInUrl,
-      message: 'Redirect to Google to reconnect your account'
+      message: 'Redirect to Google to reconnect your account',
     });
   } catch (error) {
     console.error('Error creating Google reconnection URL:', error);
@@ -27,4 +27,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

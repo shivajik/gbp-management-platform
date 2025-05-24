@@ -23,6 +23,7 @@ This document provides step-by-step instructions to resolve Google API access is
 ### 1. Google Cloud Console Configuration
 
 1. **Enable Required APIs**:
+
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
    - Navigate to "APIs & Services" > "Library"
    - Enable the following APIs:
@@ -34,10 +35,11 @@ This document provides step-by-step instructions to resolve Google API access is
      - Business Profile Performance API
 
 2. **OAuth 2.0 Configuration**:
+
    ```
    Scopes to request:
    - openid
-   - email  
+   - email
    - profile
    - https://www.googleapis.com/auth/business.manage
    ```
@@ -52,6 +54,7 @@ This document provides step-by-step instructions to resolve Google API access is
 **Important**: Google Business Profile APIs are not publicly available. You must request access.
 
 1. **Submit Access Request**:
+
    - Go to [Google Business Profile API Access Request](https://developers.google.com/my-business/content/basic-setup#request-access)
    - Use a valid business email address tied to your domain
    - Ensure your business website is live and updated
@@ -81,11 +84,13 @@ NEXTAUTH_URL=http://localhost:3000
 The fixed implementation uses the following approach:
 
 1. **Primary Method**: Direct v4 API calls
+
    ```typescript
-   `https://mybusiness.googleapis.com/v4/${locationName}/reviews`
+   `https://mybusiness.googleapis.com/v4/${locationName}/reviews`;
    ```
 
 2. **Fallback Method**: Discovery document approach
+
    ```typescript
    // Uses the static discovery document from Google's samples
    // Reference: https://developers.google.com/my-business/samples/mybusiness_google_rest_v4p9.json
@@ -96,6 +101,7 @@ The fixed implementation uses the following approach:
 ### 5. Testing the Setup
 
 1. **Connection Test**:
+
    ```bash
    npm run dev
    # Navigate to /dashboard/gbp-listings
@@ -103,6 +109,7 @@ The fixed implementation uses the following approach:
    ```
 
 2. **Manual API Test**:
+
    ```bash
    curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
         "https://mybusinessaccountmanagement.googleapis.com/v1/accounts"
@@ -118,6 +125,7 @@ The fixed implementation uses the following approach:
 ### Issue: "Request had insufficient authentication scopes"
 
 **Solution**:
+
 1. Re-authenticate with Google to get new permissions
 2. Ensure the OAuth scope includes `business.manage`
 3. Clear browser sessions and re-login
@@ -125,6 +133,7 @@ The fixed implementation uses the following approach:
 ### Issue: "API request failed: 403 Forbidden"
 
 **Solutions**:
+
 1. Verify you have Google Business Profile API access
 2. Check that your API key is properly configured
 3. Ensure your Google account has access to the business profiles
@@ -132,17 +141,20 @@ The fixed implementation uses the following approach:
 ### Issue: "Discovery document not found"
 
 **Solution**:
+
 1. Use the static discovery document approach (implemented in the fixed service)
 2. Reference: GitHub issue solutions and Google's sample files
 
 ### Issue: "No reviews returned from API"
 
 **Possible Causes**:
+
 1. Business location has no reviews
 2. API permissions insufficient for review access
 3. Location name format incorrect
 
 **Solutions**:
+
 1. Verify location name format: `accounts/{accountId}/locations/{locationId}`
 2. Check business profile has actual reviews in Google Business Profile manager
 3. Use fallback mock data for development/testing
@@ -159,6 +171,7 @@ The fixed implementation uses the following approach:
 ### Response Formats
 
 #### Review Object:
+
 ```json
 {
   "name": "accounts/.../locations/.../reviews/...",
@@ -203,4 +216,4 @@ If you're currently using the broken implementation:
 4. **Gradual Rollout**: Test with one business profile first
 5. **Monitor**: Watch for any API failures and fallback to mock data
 
-This approach ensures your review management functionality works both in development and production environments. 
+This approach ensures your review management functionality works both in development and production environments.

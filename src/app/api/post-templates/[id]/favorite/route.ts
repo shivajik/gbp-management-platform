@@ -18,9 +18,12 @@ export async function POST(
 
     // Don't allow favoriting sample templates
     if (templateId.startsWith('sample-')) {
-      return NextResponse.json({ 
-        error: 'Cannot modify sample templates' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Cannot modify sample templates',
+        },
+        { status: 400 }
+      );
     }
 
     // TODO: Once we add PostTemplate model, implement actual favorite toggle
@@ -60,9 +63,8 @@ export async function POST(
     // For now, return mock success (toggle assumed)
     return NextResponse.json({
       success: true,
-      isFavorite: Math.random() > 0.5 // Random toggle for demo
+      isFavorite: Math.random() > 0.5, // Random toggle for demo
     });
-
   } catch (error) {
     console.error('Error toggling post template favorite:', error);
     return NextResponse.json(
@@ -70,4 +72,4 @@ export async function POST(
       { status: 500 }
     );
   }
-} 
+}

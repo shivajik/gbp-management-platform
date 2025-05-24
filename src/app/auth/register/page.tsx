@@ -9,42 +9,46 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Eye, 
-  EyeOff, 
-  Zap, 
-  TrendingUp, 
-  Clock, 
+import {
+  Eye,
+  EyeOff,
+  Zap,
+  TrendingUp,
+  Clock,
   Globe,
   Shield,
   CheckCircle,
   Users,
-  Building2
+  Building2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    ),
-  confirmPassword: z.string(),
-  organizationName: z.string().min(2, 'Organization name must be at least 2 characters'),
-  organizationType: z.enum(['BUSINESS', 'AGENCY'], {
-    required_error: 'Please select an organization type',
-  }),
-  agreeToTerms: z.boolean().refine(val => val === true, {
-    message: 'You must agree to the terms and conditions',
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Please enter a valid email address'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+      ),
+    confirmPassword: z.string(),
+    organizationName: z
+      .string()
+      .min(2, 'Organization name must be at least 2 characters'),
+    organizationType: z.enum(['BUSINESS', 'AGENCY'], {
+      required_error: 'Please select an organization type',
+    }),
+    agreeToTerms: z.boolean().refine(val => val === true, {
+      message: 'You must agree to the terms and conditions',
+    }),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -64,7 +68,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
-    
+
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -79,7 +83,9 @@ export default function RegisterPage() {
       });
 
       if (response.ok) {
-        toast.success('Account created successfully! Please check your email to verify your account.');
+        toast.success(
+          'Account created successfully! Please check your email to verify your account.'
+        );
         router.push('/auth/login?message=account-created');
       } else {
         const errorData = await response.json();
@@ -93,83 +99,93 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen">
       {/* Left Side - Info Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-success-600 via-success-700 to-success-800 relative overflow-hidden">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-success-600 via-success-700 to-success-800 lg:flex lg:w-1/2">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-20">
-          <div className="w-full h-full bg-repeat" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpolygon points='20 0 40 20 20 40 0 20'/%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+          <div
+            className="h-full w-full bg-repeat"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpolygon points='20 0 40 20 20 40 0 20'/%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          ></div>
         </div>
-        
+
         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-12">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm">
+          <div className="mb-12 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
               <Zap className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">GBP Manager</h1>
-              <p className="text-success-200 text-sm">Start Your Journey</p>
+              <p className="text-sm text-success-200">Start Your Journey</p>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-6 leading-tight">
+            <h2 className="mb-6 text-4xl font-bold leading-tight">
               Join thousands of businesses growing with GBP Manager
             </h2>
-            <p className="text-xl text-success-100 leading-relaxed mb-8">
-              Start managing your Google Business Profiles like a pro. No setup fees, 
-              no long-term contracts. Just powerful tools to grow your business.
+            <p className="mb-8 text-xl leading-relaxed text-success-100">
+              Start managing your Google Business Profiles like a pro. No setup
+              fees, no long-term contracts. Just powerful tools to grow your
+              business.
             </p>
           </div>
 
           {/* Benefits */}
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <Clock className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Setup in Minutes</h3>
-                <p className="text-success-200">Connect your Google account and start managing immediately</p>
+                <h3 className="text-lg font-semibold">Setup in Minutes</h3>
+                <p className="text-success-200">
+                  Connect your Google account and start managing immediately
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <TrendingUp className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Proven Results</h3>
-                <p className="text-success-200">Our users see 40% more customer engagement on average</p>
+                <h3 className="text-lg font-semibold">Proven Results</h3>
+                <p className="text-success-200">
+                  Our users see 40% more customer engagement on average
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <Globe className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Multi-Location Ready</h3>
-                <p className="text-success-200">Scale from 1 to 1000+ locations with enterprise features</p>
+                <h3 className="text-lg font-semibold">Multi-Location Ready</h3>
+                <p className="text-success-200">
+                  Scale from 1 to 1000+ locations with enterprise features
+                </p>
               </div>
             </div>
           </div>
 
           {/* Stats */}
           <div className="mt-12 grid grid-cols-3 gap-6 text-center">
-            <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+            <div className="rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
               <div className="text-2xl font-bold text-white">10k+</div>
               <div className="text-sm text-success-200">Active Users</div>
             </div>
-            <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+            <div className="rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
               <div className="text-2xl font-bold text-white">50k+</div>
               <div className="text-sm text-success-200">Locations Managed</div>
             </div>
-            <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+            <div className="rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
               <div className="text-2xl font-bold text-white">99.9%</div>
               <div className="text-sm text-success-200">Uptime</div>
             </div>
@@ -190,19 +206,23 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side - Register Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-secondary-50/30">
+      <div className="flex flex-1 items-center justify-center bg-secondary-50/30 p-8">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-500 text-white">
+          <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
               <Zap className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold text-foreground">GBP Manager</span>
+            <span className="text-xl font-bold text-foreground">
+              GBP Manager
+            </span>
           </div>
 
           {/* Form Header */}
-          <div className="text-center mb-8">
-            <h1 className="heading-2 text-foreground mb-2">Create your account</h1>
+          <div className="mb-8 text-center">
+            <h1 className="heading-2 mb-2 text-foreground">
+              Create your account
+            </h1>
             <p className="body text-muted-foreground">
               Get started with your 14-day free trial
             </p>
@@ -212,7 +232,9 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Field */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="form-label">Full Name</Label>
+              <Label htmlFor="name" className="form-label">
+                Full Name
+              </Label>
               <Input
                 id="name"
                 type="text"
@@ -228,7 +250,9 @@ export default function RegisterPage() {
 
             {/* Email Field */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="form-label">Email address</Label>
+              <Label htmlFor="email" className="form-label">
+                Email address
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -244,7 +268,9 @@ export default function RegisterPage() {
 
             {/* Organization Name */}
             <div className="space-y-2">
-              <Label htmlFor="organizationName" className="form-label">Organization Name</Label>
+              <Label htmlFor="organizationName" className="form-label">
+                Organization Name
+              </Label>
               <Input
                 id="organizationName"
                 type="text"
@@ -259,7 +285,9 @@ export default function RegisterPage() {
 
             {/* Organization Type */}
             <div className="space-y-2">
-              <Label htmlFor="organizationType" className="form-label">Organization Type</Label>
+              <Label htmlFor="organizationType" className="form-label">
+                Organization Type
+              </Label>
               <select
                 id="organizationType"
                 className={`form-input ${errors.organizationType ? 'border-error-500' : ''}`}
@@ -276,7 +304,9 @@ export default function RegisterPage() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="form-label">Password</Label>
+              <Label htmlFor="password" className="form-label">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -288,7 +318,7 @@ export default function RegisterPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -305,7 +335,9 @@ export default function RegisterPage() {
 
             {/* Confirm Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="form-label">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="form-label">
+                Confirm Password
+              </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -317,7 +349,7 @@ export default function RegisterPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
@@ -338,16 +370,25 @@ export default function RegisterPage() {
                 <input
                   id="agreeToTerms"
                   type="checkbox"
-                  className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-border rounded mt-1"
+                  className="mt-1 h-4 w-4 rounded border-border text-primary-500 focus:ring-primary-500"
                   {...register('agreeToTerms')}
                 />
-                <Label htmlFor="agreeToTerms" className="text-sm text-muted-foreground leading-relaxed">
+                <Label
+                  htmlFor="agreeToTerms"
+                  className="text-sm leading-relaxed text-muted-foreground"
+                >
                   I agree to the{' '}
-                  <Link href="/terms" className="text-primary-600 hover:text-primary-700 font-medium">
+                  <Link
+                    href="/terms"
+                    className="font-medium text-primary-600 hover:text-primary-700"
+                  >
                     Terms of Service
-                  </Link>
-                  {' '}and{' '}
-                  <Link href="/privacy" className="text-primary-600 hover:text-primary-700 font-medium">
+                  </Link>{' '}
+                  and{' '}
+                  <Link
+                    href="/privacy"
+                    className="font-medium text-primary-600 hover:text-primary-700"
+                  >
                     Privacy Policy
                   </Link>
                 </Label>
@@ -361,11 +402,11 @@ export default function RegisterPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 text-base"
+              className="h-12 w-full text-base"
             >
               {isLoading ? (
                 <>
-                  <div className="loading-spinner w-5 h-5 mr-3"></div>
+                  <div className="loading-spinner mr-3 h-5 w-5"></div>
                   Creating account...
                 </>
               ) : (
@@ -383,7 +424,7 @@ export default function RegisterPage() {
               Already have an account?{' '}
               <Link
                 href="/auth/login"
-                className="font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                className="font-medium text-primary-600 transition-colors hover:text-primary-700"
               >
                 Sign in
               </Link>
@@ -393,10 +434,12 @@ export default function RegisterPage() {
           {/* Security Notice */}
           <div className="mt-8 flex items-center justify-center gap-2 text-muted-foreground">
             <Shield className="h-4 w-4" />
-            <span className="caption">14-day free trial • No credit card required</span>
+            <span className="caption">
+              14-day free trial • No credit card required
+            </span>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

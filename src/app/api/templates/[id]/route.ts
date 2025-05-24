@@ -23,42 +23,45 @@ const sampleTemplates: ResponseTemplate[] = [
   {
     id: 'sample-template-1',
     name: 'Thank You - 5 Star',
-    content: 'Thank you so much for your wonderful 5-star review! We\'re thrilled to hear you had such a positive experience with us. Your feedback truly makes our day and motivates our team to continue delivering excellent service.',
+    content:
+      "Thank you so much for your wonderful 5-star review! We're thrilled to hear you had such a positive experience with us. Your feedback truly makes our day and motivates our team to continue delivering excellent service.",
     sentiment: 'POSITIVE',
     usageCount: 45,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-2',
     name: 'Apology - Service Issue',
-    content: 'We sincerely apologize for the service issues you experienced. This doesn\'t reflect our usual standards, and we\'re committed to improving. We\'d love the opportunity to make this right - please contact us directly.',
+    content:
+      "We sincerely apologize for the service issues you experienced. This doesn't reflect our usual standards, and we're committed to improving. We'd love the opportunity to make this right - please contact us directly.",
     sentiment: 'NEGATIVE',
     usageCount: 23,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-3',
     name: 'Generic Thanks',
-    content: 'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service. We appreciate your business!',
+    content:
+      'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service. We appreciate your business!',
     sentiment: 'ALL',
     usageCount: 67,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
-  }
+      name: 'System Templates',
+    },
+  },
 ];
 
 // GET /api/templates/[id] - Get a specific template
@@ -79,7 +82,7 @@ export async function GET(
     if (sampleTemplate) {
       return NextResponse.json({
         success: true,
-        template: sampleTemplate
+        template: sampleTemplate,
       });
     }
 
@@ -133,13 +136,17 @@ export async function GET(
       */
 
       // For now, return template not found
-      return NextResponse.json({ error: 'Template not found' }, { status: 404 });
-
+      return NextResponse.json(
+        { error: 'Template not found' },
+        { status: 404 }
+      );
     } catch (dbError) {
       console.log('Database query failed:', dbError);
-      return NextResponse.json({ error: 'Template not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Template not found' },
+        { status: 404 }
+      );
     }
-
   } catch (error) {
     console.error('Error fetching template:', error);
     return NextResponse.json(
@@ -253,8 +260,8 @@ export async function PUT(
         updatedAt: new Date().toISOString(),
         creator: {
           id: session.user.id,
-          name: session.user.name || 'User'
-        }
+          name: session.user.name || 'User',
+        },
       };
 
       // Log activity
@@ -270,9 +277,8 @@ export async function PUT(
 
       return NextResponse.json({
         success: true,
-        template: mockUpdatedTemplate
+        template: mockUpdatedTemplate,
       });
-
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
       return NextResponse.json(
@@ -280,7 +286,6 @@ export async function PUT(
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error updating template:', error);
     return NextResponse.json(
@@ -351,9 +356,8 @@ export async function DELETE(
 
       return NextResponse.json({
         success: true,
-        message: 'Template deleted successfully'
+        message: 'Template deleted successfully',
       });
-
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
       return NextResponse.json(
@@ -361,7 +365,6 @@ export async function DELETE(
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error deleting template:', error);
     return NextResponse.json(
@@ -369,4 +372,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

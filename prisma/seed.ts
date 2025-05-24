@@ -64,7 +64,8 @@ const seedData = {
     {
       googleBusinessId: 'gbp_001',
       name: 'Downtown Pizza Palace',
-      description: 'Authentic Italian pizza in the heart of downtown. Family-owned since 1985.',
+      description:
+        'Authentic Italian pizza in the heart of downtown. Family-owned since 1985.',
       phoneNumber: '+1-555-0123',
       website: 'https://pizzapalace.com',
       email: 'info@pizzapalace.com',
@@ -75,7 +76,7 @@ const seedData = {
         postalCode: '10001',
         country: 'US',
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
       },
       categories: [
         { name: 'Pizza Restaurant', isPrimary: true },
@@ -91,7 +92,8 @@ const seedData = {
     {
       googleBusinessId: 'gbp_002',
       name: 'Sunset Dental Care',
-      description: 'Comprehensive dental services for the whole family. State-of-the-art equipment and gentle care.',
+      description:
+        'Comprehensive dental services for the whole family. State-of-the-art equipment and gentle care.',
       phoneNumber: '+1-555-0124',
       website: 'https://sunsetdental.com',
       email: 'appointments@sunsetdental.com',
@@ -131,7 +133,8 @@ const seedData = {
   // Sample posts
   posts: [
     {
-      content: '🍕 New Wood-Fired Margherita Pizza now available! Made with fresh mozzarella, San Marzano tomatoes, and basil. Come try it today! #PizzaLovers #Authentic',
+      content:
+        '🍕 New Wood-Fired Margherita Pizza now available! Made with fresh mozzarella, San Marzano tomatoes, and basil. Come try it today! #PizzaLovers #Authentic',
       callToAction: {
         type: 'ORDER',
         url: 'https://pizzapalace.com/order',
@@ -140,7 +143,8 @@ const seedData = {
       publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
     },
     {
-      content: '🦷 Did you know regular dental checkups can prevent 80% of dental problems? Book your appointment today for a healthy smile!',
+      content:
+        '🦷 Did you know regular dental checkups can prevent 80% of dental problems? Book your appointment today for a healthy smile!',
       callToAction: {
         type: 'BOOK',
         url: 'https://sunsetdental.com/book',
@@ -156,7 +160,8 @@ const seedData = {
       googleReviewId: 'review_001',
       reviewerName: 'Sarah Johnson',
       rating: 5,
-      content: 'Amazing pizza! The crust is perfect and the ingredients taste so fresh. Will definitely be back!',
+      content:
+        'Amazing pizza! The crust is perfect and the ingredients taste so fresh. Will definitely be back!',
       publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 1 week ago
       sentiment: 'POSITIVE' as const,
     },
@@ -164,7 +169,8 @@ const seedData = {
       googleReviewId: 'review_002',
       reviewerName: 'Mike Chen',
       rating: 4,
-      content: 'Great service and the office is very modern. Dr. Smith was gentle and explained everything clearly.',
+      content:
+        'Great service and the office is very modern. Dr. Smith was gentle and explained everything clearly.',
       publishedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
       sentiment: 'POSITIVE' as const,
     },
@@ -172,7 +178,8 @@ const seedData = {
       googleReviewId: 'review_003',
       reviewerName: 'Emily Rodriguez',
       rating: 3,
-      content: 'Pizza was good but service was a bit slow. Maybe they were having a busy night.',
+      content:
+        'Pizza was good but service was a bit slow. Maybe they were having a busy night.',
       publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
       sentiment: 'NEUTRAL' as const,
     },
@@ -211,7 +218,7 @@ async function main() {
   // Clear existing data (in development only)
   if (process.env.NODE_ENV === 'development') {
     console.log('🧹 Cleaning existing data...');
-    
+
     await prisma.activityLog.deleteMany();
     await prisma.notification.deleteMany();
     await prisma.businessInsights.deleteMany();
@@ -235,7 +242,7 @@ async function main() {
   // Create users first
   console.log('👥 Creating users...');
   const createdUsers = [];
-  
+
   for (const userData of seedData.users) {
     const hashedPassword = await hashPassword(userData.password);
     const user = await prisma.user.create({
@@ -253,11 +260,11 @@ async function main() {
   // Create organizations
   console.log('🏢 Creating organizations...');
   const createdOrganizations = [];
-  
+
   for (let i = 0; i < seedData.organizations.length; i++) {
     const orgData = seedData.organizations[i];
     const owner = createdUsers[i + 1]; // Skip admin user for ownership
-    
+
     const organization = await prisma.organization.create({
       data: {
         name: orgData.name,
@@ -266,24 +273,24 @@ async function main() {
         settings: orgData.settings,
       },
     });
-    
+
     // Update user to belong to organization
     await prisma.user.update({
       where: { id: owner.id },
       data: { organizationId: organization.id },
     });
-    
+
     createdOrganizations.push(organization);
   }
 
   // Create business profiles
   console.log('🏪 Creating business profiles...');
   const createdBusinessProfiles = [];
-  
+
   for (let i = 0; i < seedData.businessProfiles.length; i++) {
     const profileData = seedData.businessProfiles[i];
     const organization = createdOrganizations[i];
-    
+
     const businessProfile = await prisma.businessProfile.create({
       data: {
         googleBusinessId: profileData.googleBusinessId,
@@ -300,14 +307,14 @@ async function main() {
         status: 'ACTIVE',
       },
     });
-    
+
     createdBusinessProfiles.push(businessProfile);
   }
 
   // Create business hours for first business profile
   console.log('🕐 Creating business hours...');
   const firstProfile = createdBusinessProfiles[0];
-  
+
   for (const hours of seedData.businessHours) {
     await prisma.businessHours.create({
       data: {
@@ -326,7 +333,7 @@ async function main() {
     const postData = seedData.posts[i];
     const businessProfile = createdBusinessProfiles[i];
     const creator = createdUsers[i + 1];
-    
+
     await prisma.post.create({
       data: {
         businessProfileId: businessProfile.id,
@@ -344,8 +351,9 @@ async function main() {
   console.log('⭐ Creating reviews...');
   for (let i = 0; i < seedData.reviews.length; i++) {
     const reviewData = seedData.reviews[i];
-    const businessProfile = createdBusinessProfiles[i % createdBusinessProfiles.length];
-    
+    const businessProfile =
+      createdBusinessProfiles[i % createdBusinessProfiles.length];
+
     await prisma.review.create({
       data: {
         googleReviewId: reviewData.googleReviewId,
@@ -364,8 +372,9 @@ async function main() {
   console.log('❓ Creating questions...');
   for (let i = 0; i < seedData.questions.length; i++) {
     const questionData = seedData.questions[i];
-    const businessProfile = createdBusinessProfiles[i % createdBusinessProfiles.length];
-    
+    const businessProfile =
+      createdBusinessProfiles[i % createdBusinessProfiles.length];
+
     await prisma.question.create({
       data: {
         googleQuestionId: questionData.googleQuestionId,
@@ -382,11 +391,11 @@ async function main() {
   console.log('📊 Creating business insights...');
   const today = new Date();
   const businessProfile = createdBusinessProfiles[0];
-  
+
   for (let i = 0; i < 7; i++) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
-    
+
     await prisma.businessInsights.create({
       data: {
         businessProfileId: businessProfile.id,
@@ -417,7 +426,7 @@ async function main() {
   console.log(`⭐ Reviews: ${seedData.reviews.length}`);
   console.log(`❓ Questions: ${seedData.questions.length}`);
   console.log(`📊 Insights: 7 days of sample data`);
-  
+
   console.log('\n🔑 Sample Login Credentials:');
   console.log('Admin: admin@gbpmanagement.com / admin123');
   console.log('Agency Owner: agency@example.com / agency123');
@@ -426,10 +435,10 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('❌ Seeding failed:', e);
     process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
-  }); 
+  });

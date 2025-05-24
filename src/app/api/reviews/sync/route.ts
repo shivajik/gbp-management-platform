@@ -8,7 +8,7 @@ import prisma from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -30,7 +30,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     const businessProfile = await prisma.businessProfile.findFirst({
@@ -41,7 +44,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     if (!businessProfile.googleBusinessId) {
@@ -54,9 +60,10 @@ export async function POST(request: NextRequest) {
     // Check if Google API credentials are configured
     if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       return NextResponse.json(
-        { 
+        {
           error: 'Google Business Profile API not configured',
-          message: 'Please configure Google API credentials in environment variables'
+          message:
+            'Please configure Google API credentials in environment variables',
         },
         { status: 500 }
       );
@@ -102,16 +109,15 @@ export async function POST(request: NextRequest) {
           lastSyncAt: new Date().toISOString(),
         },
       });
-
     } catch (gbpError: any) {
       console.error('Google Business Profile sync error:', gbpError);
-      
+
       // Return specific error messages based on error type
       if (gbpError.message?.includes('access_denied')) {
         return NextResponse.json(
-          { 
+          {
             error: 'Google Business Profile access denied',
-            message: 'Please reconnect your Google Business Profile account'
+            message: 'Please reconnect your Google Business Profile account',
           },
           { status: 403 }
         );
@@ -119,23 +125,22 @@ export async function POST(request: NextRequest) {
 
       if (gbpError.message?.includes('quota_exceeded')) {
         return NextResponse.json(
-          { 
+          {
             error: 'Google API quota exceeded',
-            message: 'Please try again later'
+            message: 'Please try again later',
           },
           { status: 429 }
         );
       }
 
       return NextResponse.json(
-        { 
+        {
           error: 'Failed to sync with Google Business Profile',
-          message: gbpError.message || 'Unknown error occurred'
+          message: gbpError.message || 'Unknown error occurred',
         },
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error syncing reviews:', error);
     return NextResponse.json(
@@ -143,4 +148,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

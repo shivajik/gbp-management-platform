@@ -14,17 +14,19 @@ const registerSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
     ),
-  organizationName: z.string().min(2, 'Organization name must be at least 2 characters'),
+  organizationName: z
+    .string()
+    .min(2, 'Organization name must be at least 2 characters'),
   organizationType: z.enum(['BUSINESS', 'AGENCY']),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validatedData = registerSchema.parse(body);
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: validatedData.email },
@@ -41,49 +43,54 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
     // Create user and organization in a transaction
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // Create user
-      const user = await tx.user.create({
-        data: {
-          email: validatedData.email,
-          name: validatedData.name,
-          password: hashedPassword,
-          role: validatedData.organizationType === 'AGENCY' ? 'AGENCY_OWNER' : 'BUSINESS_OWNER',
-        },
-      });
-
-      // Create organization
-      const organization = await tx.organization.create({
-        data: {
-          name: validatedData.organizationName,
-          type: validatedData.organizationType,
-          ownerId: user.id,
-        },
-      });
-
-      // Update user with organization ID
-      const updatedUser = await tx.user.update({
-        where: { id: user.id },
-        data: { organizationId: organization.id },
-      });
-
-      // Log registration activity
-      await tx.activityLog.create({
-        data: {
-          userId: user.id,
-          action: 'CREATE',
-          resource: 'user',
-          resourceId: user.id,
-          description: `User registered with ${validatedData.organizationType.toLowerCase()} organization`,
-          metadata: {
-            organizationType: validatedData.organizationType,
-            organizationName: validatedData.organizationName,
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        // Create user
+        const user = await tx.user.create({
+          data: {
+            email: validatedData.email,
+            name: validatedData.name,
+            password: hashedPassword,
+            role:
+              validatedData.organizationType === 'AGENCY'
+                ? 'AGENCY_OWNER'
+                : 'BUSINESS_OWNER',
           },
-        },
-      });
+        });
 
-      return { user: updatedUser, organization };
-    });
+        // Create organization
+        const organization = await tx.organization.create({
+          data: {
+            name: validatedData.organizationName,
+            type: validatedData.organizationType,
+            ownerId: user.id,
+          },
+        });
+
+        // Update user with organization ID
+        const updatedUser = await tx.user.update({
+          where: { id: user.id },
+          data: { organizationId: organization.id },
+        });
+
+        // Log registration activity
+        await tx.activityLog.create({
+          data: {
+            userId: user.id,
+            action: 'CREATE',
+            resource: 'user',
+            resourceId: user.id,
+            description: `User registered with ${validatedData.organizationType.toLowerCase()} organization`,
+            metadata: {
+              organizationType: validatedData.organizationType,
+              organizationName: validatedData.organizationName,
+            },
+          },
+        });
+
+        return { user: updatedUser, organization };
+      }
+    );
 
     // Return success response (excluding password)
     return NextResponse.json({
@@ -96,7 +103,6 @@ export async function POST(request: NextRequest) {
         organizationId: result.user.organizationId,
       },
     });
-
   } catch (error) {
     console.error('Registration error:', error);
 
@@ -118,7 +124,10 @@ export async function POST(request: NextRequest) {
       // Check for common database errors
       if (error.message.includes('connect')) {
         return NextResponse.json(
-          { error: 'Database connection failed. Please check your database configuration.' },
+          {
+            error:
+              'Database connection failed. Please check your database configuration.',
+          },
           { status: 500 }
         );
       }
@@ -148,4 +157,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -7,14 +7,17 @@ import { useBusiness } from '@/contexts/BusinessContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MetricsCard } from '@/components/analytics/MetricsCard';
-import { AnalyticsChart, ChartData } from '@/components/analytics/AnalyticsChart';
+import {
+  AnalyticsChart,
+  ChartData,
+} from '@/components/analytics/AnalyticsChart';
 import { ListingSelector } from '@/components/analytics/ListingSelector';
-import { 
-  Eye, 
-  Search, 
-  MousePointer, 
-  Phone, 
-  MapPin, 
+import {
+  Eye,
+  Search,
+  MousePointer,
+  Phone,
+  MapPin,
   Camera,
   Star,
   MessageSquare,
@@ -25,7 +28,7 @@ import {
   Calendar,
   TrendingUp,
   Building2,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -78,28 +81,30 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [period, setPeriod] = useState<'week' | 'month' | 'quarter'>('month');
-  const [selectedListingId, setSelectedListingId] = useState<string | undefined>(undefined);
+  const [selectedListingId, setSelectedListingId] = useState<
+    string | undefined
+  >(undefined);
 
   // Fetch analytics data
   const fetchAnalytics = async (sync = false) => {
     try {
       if (sync) setSyncing(true);
-      
+
       // Skip fetch if no business is selected
       if (!selectedBusiness) {
         setLoading(false);
         return;
       }
-      
+
       const params = new URLSearchParams({
         period,
         sync: sync.toString(),
         businessProfileId: selectedBusiness.id,
       });
-      
+
       const response = await fetch(`/api/analytics?${params}`);
       const result = await response.json();
-      
+
       if (result.success) {
         setData(result.data);
       } else {
@@ -117,12 +122,12 @@ export default function AnalyticsPage() {
   const exportData = async () => {
     try {
       if (!selectedBusiness) return;
-      
-      const body = { 
+
+      const body = {
         period,
-        businessProfileId: selectedBusiness.id
+        businessProfileId: selectedBusiness.id,
       };
-      
+
       const response = await fetch('/api/analytics/export', {
         method: 'POST',
         headers: {
@@ -180,8 +185,10 @@ export default function AnalyticsPage() {
       <div className="min-h-screen bg-background p-6">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="loading-spinner w-12 h-12 mb-4"></div>
-            <p className="body text-muted-foreground">Loading analytics data...</p>
+            <div className="loading-spinner mb-4 h-12 w-12"></div>
+            <p className="body text-muted-foreground">
+              Loading analytics data...
+            </p>
           </div>
         </div>
       </div>
@@ -194,20 +201,23 @@ export default function AnalyticsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="card-elevated">
             <div className="card-content p-12 text-center">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-xl bg-muted">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-muted">
                 <BarChart3 className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="heading-3 text-foreground mb-2">Select a Business Location</h3>
-              <p className="body text-muted-foreground mb-6">
-                Please select a business location from the dropdown in the top navigation to view its analytics data.
+              <h3 className="heading-3 mb-2 text-foreground">
+                Select a Business Location
+              </h3>
+              <p className="body mb-6 text-muted-foreground">
+                Please select a business location from the dropdown in the top
+                navigation to view its analytics data.
               </p>
               {businesses.length === 0 && (
-                <Button 
+                <Button
                   variant="default"
                   onClick={() => router.push('/dashboard/gbp-listings')}
                   size="lg"
                 >
-                  <Building2 className="h-4 w-4 mr-2" />
+                  <Building2 className="mr-2 h-4 w-4" />
                   Connect Business Profile
                 </Button>
               )}
@@ -224,24 +234,29 @@ export default function AnalyticsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="card-elevated">
             <div className="card-content p-12 text-center">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-xl bg-muted">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-muted">
                 <TrendingUp className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="heading-3 text-foreground mb-2">No Analytics Data</h3>
-              <p className="body text-muted-foreground mb-6">
-                No analytics data available for {selectedBusiness.name}. Try syncing data from Google Business Profile.
+              <h3 className="heading-3 mb-2 text-foreground">
+                No Analytics Data
+              </h3>
+              <p className="body mb-6 text-muted-foreground">
+                No analytics data available for {selectedBusiness.name}. Try
+                syncing data from Google Business Profile.
               </p>
               <div className="flex justify-center gap-3">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => router.push('/dashboard/gbp-listings')}
                   size="lg"
                 >
-                  <Building2 className="h-4 w-4 mr-2" />
+                  <Building2 className="mr-2 h-4 w-4" />
                   Manage Listings
                 </Button>
                 <Button onClick={handleSync} disabled={syncing} size="lg">
-                  <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`}
+                  />
                   {syncing ? 'Syncing...' : 'Sync Data'}
                 </Button>
               </div>
@@ -257,8 +272,8 @@ export default function AnalyticsPage() {
       <div className="mx-auto max-w-7xl p-6">
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-500 text-white shadow-soft">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500 text-white shadow-soft">
               <BarChart3 className="h-6 w-6" />
             </div>
             <div>
@@ -268,17 +283,17 @@ export default function AnalyticsPage() {
               </p>
             </div>
           </div>
-          
+
           {/* Controls Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               {/* Period Selector */}
-              <div className="flex items-center gap-1 p-1 bg-secondary rounded-lg">
-                {(['week', 'month', 'quarter'] as const).map((p) => (
+              <div className="flex items-center gap-1 rounded-lg bg-secondary p-1">
+                {(['week', 'month', 'quarter'] as const).map(p => (
                   <button
                     key={p}
                     onClick={() => handlePeriodChange(p)}
-                    className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+                    className={`rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                       period === p
                         ? 'bg-card text-foreground shadow-soft'
                         : 'text-muted-foreground hover:text-foreground'
@@ -298,15 +313,13 @@ export default function AnalyticsPage() {
                 disabled={syncing}
                 size="sm"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`}
+                />
                 {syncing ? 'Syncing...' : 'Sync Data'}
               </Button>
-              <Button
-                variant="outline"
-                onClick={exportData}
-                size="sm"
-              >
-                <Download className="h-4 w-4 mr-2" />
+              <Button variant="outline" onClick={exportData} size="sm">
+                <Download className="mr-2 h-4 w-4" />
                 Export
               </Button>
             </div>
@@ -314,7 +327,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Key Metrics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <MetricsCard
             title="Total Views"
             value={data.overview.totalViews}
@@ -331,7 +344,11 @@ export default function AnalyticsPage() {
           />
           <MetricsCard
             title="Customer Actions"
-            value={data.overview.websiteClicks + data.overview.phoneCallClicks + data.overview.directionRequests}
+            value={
+              data.overview.websiteClicks +
+              data.overview.phoneCallClicks +
+              data.overview.directionRequests
+            }
             icon={MousePointer}
             color="purple"
             description="Website visits, calls, and directions"
@@ -346,7 +363,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Detailed Action Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           <MetricsCard
             title="Website Clicks"
             value={data.overview.websiteClicks}
@@ -371,7 +388,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Performance Trends */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="card-elevated">
             <AnalyticsChart
               title="Views Over Time"
@@ -404,40 +421,49 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Location Comparison & Content Performance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Location Comparison */}
           <div className="card-elevated">
             <div className="card-header">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100 text-primary-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100 text-primary-600">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="card-title">
-                    {selectedListingId ? 'Location Details' : 'Location Performance'}
+                    {selectedListingId
+                      ? 'Location Details'
+                      : 'Location Performance'}
                   </h3>
                   <p className="card-description">
-                    {selectedListingId 
+                    {selectedListingId
                       ? 'Performance details for selected location'
-                      : 'Compare performance across your locations'
-                    }
+                      : 'Compare performance across your locations'}
                   </p>
                 </div>
               </div>
             </div>
             <div className="card-content">
               <div className="space-y-3">
-                {data.locationComparison.slice(0, 5).map((location) => (
-                  <div key={location.locationId} className="flex items-center justify-between p-4 bg-secondary-50 rounded-lg border border-border hover:bg-accent transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground truncate">{location.locationName}</p>
+                {data.locationComparison.slice(0, 5).map(location => (
+                  <div
+                    key={location.locationId}
+                    className="flex items-center justify-between rounded-lg border border-border bg-secondary-50 p-4 transition-colors hover:bg-accent"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-foreground">
+                        {location.locationName}
+                      </p>
                       <p className="body-small text-muted-foreground">
-                        {location.metrics.totalViews} views • {location.metrics.averageRating.toFixed(1)} ★
+                        {location.metrics.totalViews} views •{' '}
+                        {location.metrics.averageRating.toFixed(1)} ★
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-primary-600">
-                        {location.metrics.websiteClicks + location.metrics.phoneCallClicks} actions
+                        {location.metrics.websiteClicks +
+                          location.metrics.phoneCallClicks}{' '}
+                        actions
                       </p>
                     </div>
                   </div>
@@ -450,7 +476,7 @@ export default function AnalyticsPage() {
           <div className="card-elevated">
             <div className="card-header">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-success-100 text-success-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success-100 text-success-600">
                   <FileText className="h-5 w-5" />
                 </div>
                 <div>
@@ -462,24 +488,33 @@ export default function AnalyticsPage() {
             <div className="card-content">
               <div className="space-y-3">
                 {data.topPerformingPosts.length > 0 ? (
-                  data.topPerformingPosts.map((post) => (
-                    <div key={post.id} className="p-4 bg-secondary-50 rounded-lg border border-border">
-                      <p className="body-small text-foreground mb-2 line-clamp-2">{post.content}</p>
-                      <div className="flex items-center justify-between caption text-muted-foreground">
+                  data.topPerformingPosts.map(post => (
+                    <div
+                      key={post.id}
+                      className="rounded-lg border border-border bg-secondary-50 p-4"
+                    >
+                      <p className="body-small mb-2 line-clamp-2 text-foreground">
+                        {post.content}
+                      </p>
+                      <div className="caption flex items-center justify-between text-muted-foreground">
                         <span>{post.locationName}</span>
-                        <span>{post.views} views • {post.clicks} clicks</span>
+                        <span>
+                          {post.views} views • {post.clicks} clicks
+                        </span>
                       </div>
-                      <p className="caption text-muted-foreground mt-1">
+                      <p className="caption mt-1 text-muted-foreground">
                         {format(new Date(post.publishedAt), 'MMM d, yyyy')}
                       </p>
                     </div>
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted mb-3">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
                       <FileText className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <p className="body-small text-muted-foreground">No posts with performance data yet</p>
+                    <p className="body-small text-muted-foreground">
+                      No posts with performance data yet
+                    </p>
                   </div>
                 )}
               </div>
@@ -500,35 +535,44 @@ export default function AnalyticsPage() {
           <CardContent>
             <div className="space-y-4">
               {data.recentReviews.length > 0 ? (
-                data.recentReviews.map((review) => (
-                  <div key={review.id} className="p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
+                data.recentReviews.map(review => (
+                  <div
+                    key={review.id}
+                    className="rounded-lg border border-gray-200 p-4"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
+                          {[1, 2, 3, 4, 5].map(star => (
                             <Star
                               key={star}
                               className={`h-4 w-4 ${
-                                star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                star <= review.rating
+                                  ? 'fill-current text-yellow-400'
+                                  : 'text-gray-300'
                               }`}
                             />
                           ))}
                         </div>
-                        <span className="font-medium text-gray-900">{review.reviewerName}</span>
+                        <span className="font-medium text-gray-900">
+                          {review.reviewerName}
+                        </span>
                       </div>
                       <span className="text-sm text-gray-500">
                         {format(new Date(review.publishedAt), 'MMM d, yyyy')}
                       </span>
                     </div>
                     {review.content && (
-                      <p className="text-gray-700 mb-2">{review.content}</p>
+                      <p className="mb-2 text-gray-700">{review.content}</p>
                     )}
-                    <p className="text-sm text-blue-600">{review.locationName}</p>
+                    <p className="text-sm text-blue-600">
+                      {review.locationName}
+                    </p>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <MessageSquare className="h-8 w-8 mx-auto mb-2" />
+                <div className="py-8 text-center text-gray-500">
+                  <MessageSquare className="mx-auto mb-2 h-8 w-8" />
                   <p>No reviews available</p>
                 </div>
               )}
@@ -537,7 +581,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Additional Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <MetricsCard
             title="Photo Views"
             value={data.overview.photoViews}
@@ -563,4 +607,4 @@ export default function AnalyticsPage() {
       </div>
     </div>
   );
-} 
+}

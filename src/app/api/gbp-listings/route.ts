@@ -5,29 +5,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-interface BusinessProfile {
-  id: string;
-  googleBusinessId: string;
-  name: string;
-  description?: string;
-  address: any;
-  phoneNumber?: string;
-  website?: string;
-  email?: string;
-  isVerified: boolean;
-  status: string;
-  lastSyncAt?: Date;
-  categories: any;
-  attributes: any;
-  photos: any[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -39,7 +22,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User does not have an organization' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User does not have an organization' },
+        { status: 400 }
+      );
     }
 
     // Fetch business profiles for the organization
@@ -58,7 +44,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform the profiles to include isSelected based on attributes
-    const transformedProfiles = profiles.map((profile: BusinessProfile) => ({
+    const transformedProfiles = profiles.map((profile) => ({
       id: profile.id,
       googleBusinessId: profile.googleBusinessId,
       name: profile.name,
@@ -71,7 +57,7 @@ export async function GET(request: NextRequest) {
       status: profile.status,
       lastSyncAt: profile.lastSyncAt,
       categories: profile.categories,
-      isSelected: profile.attributes?.selectedForAnalytics === true,
+      isSelected: (profile.attributes as any)?.selectedForAnalytics === true,
       photos: profile.photos,
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt,
@@ -81,7 +67,6 @@ export async function GET(request: NextRequest) {
       success: true,
       profiles: transformedProfiles,
     });
-
   } catch (error) {
     console.error('Error fetching GBP listings:', error);
     return NextResponse.json(
@@ -89,4 +74,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

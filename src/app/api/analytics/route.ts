@@ -8,20 +8,25 @@ import prisma from '@/lib/db';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const period = searchParams.get('period') as 'week' | 'month' | 'quarter' || 'month';
+    const period =
+      (searchParams.get('period') as 'week' | 'month' | 'quarter') || 'month';
     const sync = searchParams.get('sync') === 'true';
-    const businessProfileId = searchParams.get('businessProfileId') || undefined;
+    const businessProfileId =
+      searchParams.get('businessProfileId') || undefined;
 
     // Sync insights data if requested
     if (sync) {
       try {
-        await AnalyticsService.syncInsightsData(session.user.id, businessProfileId);
+        await AnalyticsService.syncInsightsData(
+          session.user.id,
+          businessProfileId
+        );
       } catch (error) {
         console.error('Error syncing insights data:', error);
         // Continue to return existing data even if sync fails
@@ -29,7 +34,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Get analytics data
-    const analyticsData = await AnalyticsService.getAnalyticsData(session.user.id, period, businessProfileId);
+    const analyticsData = await AnalyticsService.getAnalyticsData(
+      session.user.id,
+      period,
+      businessProfileId
+    );
 
     return NextResponse.json({
       success: true,
@@ -51,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -60,13 +69,17 @@ export async function POST(request: NextRequest) {
     const { period = 'month', businessProfileId } = body;
 
     // Export analytics data as CSV
-    const csvData = await AnalyticsService.exportAnalyticsData(session.user.id, period, businessProfileId);
+    const csvData = await AnalyticsService.exportAnalyticsData(
+      session.user.id,
+      period,
+      businessProfileId
+    );
 
     // Log activity
     await prisma.activityLog.create({
       data: {
         userId: session.user.id,
-        action: 'EXPORT',
+        action: 'READ',
         resource: 'analytics',
         resourceId: businessProfileId || 'all',
         description: `Exported analytics data for period: ${period}${businessProfileId ? ` for listing: ${businessProfileId}` : ''}`,
@@ -88,4 +101,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -6,7 +6,7 @@ import prisma from '@/lib/db';
 export async function POST() {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -24,8 +24,8 @@ export async function POST() {
     const orgWithProfiles = await prisma.organization.findFirst({
       where: {
         businessProfiles: {
-          some: {}
-        }
+          some: {},
+        },
       },
       include: {
         businessProfiles: {
@@ -33,32 +33,35 @@ export async function POST() {
           select: {
             id: true,
             name: true,
-            googleBusinessId: true
-          }
-        }
-      }
+            googleBusinessId: true,
+          },
+        },
+      },
     });
 
     if (!orgWithProfiles) {
-      return NextResponse.json({ 
-        error: 'No organization with business profiles found' 
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          error: 'No organization with business profiles found',
+        },
+        { status: 404 }
+      );
     }
 
     // Update user to link to this organization
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { 
+      data: {
         organizationId: orgWithProfiles.id,
-        role: 'BUSINESS_OWNER' // Give appropriate role
+        role: 'BUSINESS_OWNER', // Give appropriate role
       },
       include: {
         organization: {
           include: {
-            businessProfiles: true
-          }
-        }
-      }
+            businessProfiles: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
@@ -68,10 +71,10 @@ export async function POST() {
         id: updatedUser.id,
         email: updatedUser.email,
         organizationId: updatedUser.organizationId,
-        role: updatedUser.role
+        role: updatedUser.role,
       },
       organization: orgWithProfiles,
-      businessProfilesCount: orgWithProfiles.businessProfiles.length
+      businessProfilesCount: orgWithProfiles.businessProfiles.length,
     });
   } catch (error) {
     console.error('Error linking user to organization:', error);
@@ -80,4 +83,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-} 
+}

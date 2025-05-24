@@ -48,7 +48,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: 'openid email profile https://www.googleapis.com/auth/business.manage',
+          scope:
+            'openid email profile https://www.googleapis.com/auth/business.manage',
           access_type: 'offline',
           prompt: 'consent',
           include_granted_scopes: true,
@@ -171,7 +172,9 @@ export const authOptions: NextAuthOptions = {
 
             // Check if Google account is already linked
             const googleAccount = existingUser.accounts.find(
-              (acc: any) => acc.provider === 'google' && acc.providerAccountId === account.providerAccountId
+              (acc: any) =>
+                acc.provider === 'google' &&
+                acc.providerAccountId === account.providerAccountId
             );
 
             if (!googleAccount) {
@@ -203,7 +206,10 @@ export const authOptions: NextAuthOptions = {
                 },
               });
 
-              console.log('Linked Google account to existing user:', user.email);
+              console.log(
+                'Linked Google account to existing user:',
+                user.email
+              );
             } else {
               // Update last login for existing linked account
               await prisma.user.update({
@@ -235,7 +241,7 @@ export const authOptions: NextAuthOptions = {
           } else {
             // Create new user with Google account
             console.log('Creating new user with Google OAuth:', user.email);
-            
+
             const result = await prisma.$transaction(async (tx: any) => {
               // Create user
               const newUser = await tx.user.create({
@@ -321,11 +327,11 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async signIn({ user, account, isNewUser }) {
-      console.log('SignIn event:', { 
-        userId: user.id, 
-        email: user.email, 
+      console.log('SignIn event:', {
+        userId: user.id,
+        email: user.email,
         provider: account?.provider,
-        isNewUser 
+        isNewUser,
       });
     },
     async signOut({ session, token }) {
@@ -333,4 +339,4 @@ export const authOptions: NextAuthOptions = {
     },
   },
   debug: true, // Enable debug mode for development
-}; 
+};

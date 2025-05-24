@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -54,7 +54,7 @@ export async function GET(
           take: 10,
           orderBy: { createdAt: 'desc' },
           include: {
-            answers: true,
+            answer: true,
           },
         },
         insights: {
@@ -65,7 +65,10 @@ export async function GET(
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
@@ -88,14 +91,14 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = params;
     const body = await request.json();
-    
+
     const {
       name,
       description,
@@ -121,17 +124,20 @@ export async function PUT(
     });
 
     if (!existingProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     // Create Google Business API instance
     const api = await createGoogleBusinessAPIFromSession();
-    
+
     if (api) {
       try {
         // Construct the full Google location name
         const locationName = `accounts/${existingProfile.googleBusinessId.split('/')[0]}/locations/${existingProfile.googleBusinessId}`;
-        
+
         // Prepare update data for Google API
         const updateData = {
           title: name,
@@ -156,8 +162,10 @@ export async function PUT(
       where: { id },
       data: {
         name: name || existingProfile.name,
-        description: description !== undefined ? description : existingProfile.description,
-        phoneNumber: phoneNumber !== undefined ? phoneNumber : existingProfile.phoneNumber,
+        description:
+          description !== undefined ? description : existingProfile.description,
+        phoneNumber:
+          phoneNumber !== undefined ? phoneNumber : existingProfile.phoneNumber,
         website: website !== undefined ? website : existingProfile.website,
         email: email !== undefined ? email : existingProfile.email,
         address: address || existingProfile.address,
@@ -219,7 +227,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -239,17 +247,20 @@ export async function DELETE(
     });
 
     if (!existingProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     // Create Google Business API instance
     const api = await createGoogleBusinessAPIFromSession();
-    
+
     if (api) {
       try {
         // Construct the full Google location name
         const locationName = `accounts/${existingProfile.googleBusinessId.split('/')[0]}/locations/${existingProfile.googleBusinessId}`;
-        
+
         // Delete location from Google Business (optional - might want to just deactivate)
         await api.deleteLocation(locationName);
       } catch (error) {
@@ -294,4 +305,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

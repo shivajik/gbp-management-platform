@@ -23,68 +23,73 @@ const sampleTemplates: ResponseTemplate[] = [
   {
     id: 'sample-template-1',
     name: 'Thank You - 5 Star',
-    content: 'Thank you so much for your wonderful 5-star review! We\'re thrilled to hear you had such a positive experience with us. Your feedback truly makes our day and motivates our team to continue delivering excellent service.',
+    content:
+      "Thank you so much for your wonderful 5-star review! We're thrilled to hear you had such a positive experience with us. Your feedback truly makes our day and motivates our team to continue delivering excellent service.",
     sentiment: 'POSITIVE',
     usageCount: 45,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-2',
     name: 'Apology - Service Issue',
-    content: 'We sincerely apologize for the service issues you experienced. This doesn\'t reflect our usual standards, and we\'re committed to improving. We\'d love the opportunity to make this right - please contact us directly.',
+    content:
+      "We sincerely apologize for the service issues you experienced. This doesn't reflect our usual standards, and we're committed to improving. We'd love the opportunity to make this right - please contact us directly.",
     sentiment: 'NEGATIVE',
     usageCount: 23,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-3',
     name: 'Generic Thanks',
-    content: 'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service. We appreciate your business!',
+    content:
+      'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service. We appreciate your business!',
     sentiment: 'ALL',
     usageCount: 67,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-4',
     name: 'Neutral Response',
-    content: 'Thank you for your feedback. We appreciate you taking the time to share your experience. If you have any additional comments or suggestions, please feel free to reach out to us directly.',
+    content:
+      'Thank you for your feedback. We appreciate you taking the time to share your experience. If you have any additional comments or suggestions, please feel free to reach out to us directly.',
     sentiment: 'NEUTRAL',
     usageCount: 31,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-template-5',
     name: 'Follow-up Question',
-    content: 'Thank you for your review! We\'d love to learn more about your experience to help us serve you better. Please feel free to contact us directly if you have any specific feedback or suggestions.',
+    content:
+      "Thank you for your review! We'd love to learn more about your experience to help us serve you better. Please feel free to contact us directly if you have any specific feedback or suggestions.",
     sentiment: 'ALL',
     usageCount: 19,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
-  }
+      name: 'System Templates',
+    },
+  },
 ];
 
 // GET /api/templates - List templates for a business
@@ -99,7 +104,10 @@ export async function GET(request: NextRequest) {
     const businessProfileId = searchParams.get('businessProfileId');
 
     if (!businessProfileId) {
-      return NextResponse.json({ error: 'Business profile ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Business profile ID is required' },
+        { status: 400 }
+      );
     }
 
     // Verify user has access to this business profile
@@ -109,17 +117,20 @@ export async function GET(request: NextRequest) {
         organization: {
           OR: [
             { ownerId: session.user.id },
-            { teamMembers: { some: { userId: session.user.id } } }
-          ]
-        }
+            { teamMembers: { some: { userId: session.user.id } } },
+          ],
+        },
       },
       include: {
-        organization: true
-      }
+        organization: true,
+      },
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found or access denied' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found or access denied' },
+        { status: 404 }
+      );
     }
 
     try {
@@ -160,23 +171,21 @@ export async function GET(request: NextRequest) {
       // For now, return sample templates with businessProfileId
       const templatesWithBusinessId = sampleTemplates.map(template => ({
         ...template,
-        businessProfileId
+        businessProfileId,
       }));
 
       return NextResponse.json({
         success: true,
-        templates: templatesWithBusinessId
+        templates: templatesWithBusinessId,
       });
-
     } catch (dbError) {
       console.log('Database query failed, using sample templates:', dbError);
       return NextResponse.json({
         success: true,
         templates: sampleTemplates,
-        isSampleData: true
+        isSampleData: true,
       });
     }
-
   } catch (error) {
     console.error('Error fetching templates:', error);
     return NextResponse.json(
@@ -219,14 +228,17 @@ export async function POST(request: NextRequest) {
         organization: {
           OR: [
             { ownerId: session.user.id },
-            { teamMembers: { some: { userId: session.user.id } } }
-          ]
-        }
-      }
+            { teamMembers: { some: { userId: session.user.id } } },
+          ],
+        },
+      },
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found or access denied' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found or access denied' },
+        { status: 404 }
+      );
     }
 
     try {
@@ -277,8 +289,8 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date().toISOString(),
         creator: {
           id: session.user.id,
-          name: session.user.name || 'User'
-        }
+          name: session.user.name || 'User',
+        },
       };
 
       // Log activity
@@ -292,11 +304,13 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      return NextResponse.json({
-        success: true,
-        template: mockTemplate
-      }, { status: 201 });
-
+      return NextResponse.json(
+        {
+          success: true,
+          template: mockTemplate,
+        },
+        { status: 201 }
+      );
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
       return NextResponse.json(
@@ -304,7 +318,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error creating template:', error);
     return NextResponse.json(
@@ -312,4 +325,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

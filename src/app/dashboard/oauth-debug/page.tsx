@@ -41,10 +41,14 @@ export default function OAuthDebugPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto space-y-6 py-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">OAuth Debug Console</h1>
-        <p className="text-gray-600">Diagnose and fix Google OAuth authentication issues</p>
+        <h1 className="text-2xl font-bold text-gray-900">
+          OAuth Debug Console
+        </h1>
+        <p className="text-gray-600">
+          Diagnose and fix Google OAuth authentication issues
+        </p>
       </div>
 
       {/* Session Status */}
@@ -56,7 +60,9 @@ export default function OAuthDebugPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="font-medium">Status:</span>
-              <Badge variant={status === 'authenticated' ? 'default' : 'destructive'}>
+              <Badge
+                variant={status === 'authenticated' ? 'default' : 'destructive'}
+              >
                 {status}
               </Badge>
             </div>
@@ -81,8 +87,13 @@ export default function OAuthDebugPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             Token Debug Information
-            <Button onClick={fetchDebugInfo} disabled={loading || status !== 'authenticated'}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <Button
+              onClick={fetchDebugInfo}
+              disabled={loading || status !== 'authenticated'}
+            >
+              <RefreshCw
+                className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+              />
               {loading ? 'Loading...' : 'Fetch Debug Info'}
             </Button>
           </CardTitle>
@@ -93,44 +104,62 @@ export default function OAuthDebugPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Google Account:</span>
-                  <Badge variant={debugInfo.hasGoogleAccount ? 'default' : 'destructive'}>
+                  <Badge
+                    variant={
+                      debugInfo.hasGoogleAccount ? 'default' : 'destructive'
+                    }
+                  >
                     {debugInfo.hasGoogleAccount ? 'Connected' : 'Not Connected'}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Access Token:</span>
-                  <Badge variant={debugInfo.hasAccessToken ? 'default' : 'destructive'}>
+                  <Badge
+                    variant={
+                      debugInfo.hasAccessToken ? 'default' : 'destructive'
+                    }
+                  >
                     {debugInfo.hasAccessToken ? 'Present' : 'Missing'}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Refresh Token:</span>
-                  <Badge variant={debugInfo.hasRefreshToken ? 'default' : 'destructive'}>
+                  <Badge
+                    variant={
+                      debugInfo.hasRefreshToken ? 'default' : 'destructive'
+                    }
+                  >
                     {debugInfo.hasRefreshToken ? 'Present' : 'Missing'}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Token Status:</span>
-                  <Badge variant={debugInfo.isExpired ? 'destructive' : 'default'}>
+                  <Badge
+                    variant={debugInfo.isExpired ? 'destructive' : 'default'}
+                  >
                     {debugInfo.isExpired ? 'Expired' : 'Valid'}
                   </Badge>
                 </div>
               </div>
-              
+
               {debugInfo.expiresAt && (
                 <div>
                   <span className="font-medium">Expires At:</span>
-                  <span className="ml-2">{new Date(debugInfo.expiresAt).toLocaleString()}</span>
+                  <span className="ml-2">
+                    {new Date(debugInfo.expiresAt).toLocaleString()}
+                  </span>
                 </div>
               )}
-              
-              <div className="p-3 bg-gray-100 rounded">
+
+              <div className="rounded bg-gray-100 p-3">
                 <span className="font-medium">Recommendation:</span>
-                <p className="text-sm mt-1">{debugInfo.recommendation}</p>
+                <p className="mt-1 text-sm">{debugInfo.recommendation}</p>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500">Click "Fetch Debug Info" to see token details</p>
+            <p className="text-gray-500">
+              Click "Fetch Debug Info" to see token details
+            </p>
           )}
         </CardContent>
       </Card>
@@ -144,16 +173,22 @@ export default function OAuthDebugPage() {
           <div className="space-y-4">
             {status === 'authenticated' ? (
               <div className="space-y-2">
-                <Button onClick={handleSignOut} variant="outline" className="w-full">
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="w-full"
+                >
                   Sign Out
                 </Button>
                 <Button onClick={handleForceReconnect} className="w-full">
-                  <Shield className="h-4 w-4 mr-2" />
+                  <Shield className="mr-2 h-4 w-4" />
                   Force Reconnect (Sign Out + Sign In)
                 </Button>
-                <Button 
-                  onClick={() => signIn('google', { callbackUrl: '/dashboard/oauth-debug' })} 
-                  variant="outline" 
+                <Button
+                  onClick={() =>
+                    signIn('google', { callbackUrl: '/dashboard/oauth-debug' })
+                  }
+                  variant="outline"
                   className="w-full"
                 >
                   Reconnect (Keep Session)
@@ -175,7 +210,7 @@ export default function OAuthDebugPage() {
             <CardTitle>Raw Debug Data</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre className="text-xs bg-gray-100 p-4 rounded overflow-auto">
+            <pre className="overflow-auto rounded bg-gray-100 p-4 text-xs">
               {JSON.stringify(debugInfo, null, 2)}
             </pre>
           </CardContent>
@@ -183,4 +218,4 @@ export default function OAuthDebugPage() {
       )}
     </div>
   );
-} 
+}

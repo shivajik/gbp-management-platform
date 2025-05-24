@@ -58,7 +58,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - PostgreSQL database
 - Google Cloud Platform account (for APIs)
@@ -66,40 +66,45 @@ src/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd gbp-management-platform
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
+
    ```bash
    # Copy the environment template
    cp env.example .env.local
-   
+
    # Edit .env.local with your actual values
    ```
 
 4. **Database Setup**
+
    ```bash
    # Generate Prisma client
    npm run db:generate
-   
+
    # Push schema to database
    npm run db:push
-   
+
    # Seed development data
    npm run db:seed
-   
+
    # (Optional) Open Prisma Studio
    npm run db:studio
    ```
 
 5. **Run Development Server**
+
    ```bash
    npm run dev
    ```
@@ -111,6 +116,7 @@ src/
 Copy `env.example` to `.env.local` and configure the following:
 
 ### Required Variables
+
 ```env
 # Database
 DATABASE_URL="postgresql://..."
@@ -126,6 +132,7 @@ GOOGLE_BUSINESS_PROFILE_API_KEY="your-api-key"
 ```
 
 ### Optional Variables
+
 ```env
 # File Upload (Cloudinary)
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
@@ -147,6 +154,7 @@ SMTP_PASS="your-app-password"
 The platform is built using a modular architecture. Each module is independently functional and testable:
 
 ### Current Modules
+
 1. ✅ **Project Setup & Architecture** (Complete)
 2. ✅ **Database Design & Setup** (Complete)
 3. ⏳ **Authentication & User Management**
@@ -168,7 +176,7 @@ The platform is built using a modular architecture. Each module is independently
 The platform uses a comprehensive PostgreSQL schema with 20+ tables covering:
 
 - **Authentication**: Users, accounts, sessions
-- **Organizations**: Multi-tenant structure with team management  
+- **Organizations**: Multi-tenant structure with team management
 - **Business Profiles**: GBP data, hours, photos, categories
 - **Content Management**: Posts, images, scheduling, metrics
 - **Reputation**: Reviews, responses, Q&A management
@@ -176,6 +184,7 @@ The platform uses a comprehensive PostgreSQL schema with 20+ tables covering:
 - **System**: Notifications, audit logs, billing
 
 ### Key Features
+
 - **Multi-tenancy**: Organizations can manage multiple business profiles
 - **Audit Trail**: Complete logging of all user actions
 - **Role-based Access**: Granular permissions for team members
@@ -223,13 +232,15 @@ npm run test:coverage
 ## 🔗 API Endpoints
 
 ### Health Check
+
 - `GET /api/health` - System health status and database connectivity
 
 ### Development Credentials
+
 After running `npm run db:seed`, you can use these test accounts:
 
 - **Admin**: admin@gbpmanagement.com / admin123
-- **Agency Owner**: agency@example.com / agency123  
+- **Agency Owner**: agency@example.com / agency123
 - **Business Owner**: business@example.com / business123
 - **Team Member**: member@example.com / member123
 
@@ -269,21 +280,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🗺️ Roadmap
 
 ### Phase 1: Foundation (Weeks 1-2) ✅
+
 - [x] Project setup and architecture
 - [x] Database design and setup
 - [ ] Authentication system
 
 ### Phase 2: Core Features (Weeks 3-4)
+
 - [ ] Google OAuth integration
 - [ ] Business profile management
 - [ ] Basic dashboard
 
 ### Phase 3: Content Management (Weeks 5-7)
+
 - [ ] Post management system
 - [ ] Review management
 - [ ] Q&A management
 
 ### Phase 4: Advanced Features (Weeks 8-13)
+
 - [ ] Analytics and reporting
 - [ ] Team collaboration
 - [ ] Billing system
@@ -298,4 +313,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built with ❤️ by the GBP Management Team 
+Built with ❤️ by the GBP Management Team

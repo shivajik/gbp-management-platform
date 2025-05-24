@@ -7,7 +7,7 @@ import { gbpService } from '@/lib/google-business';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -32,20 +32,20 @@ export async function GET(request: NextRequest) {
         error: 'Missing required environment variables',
         missing: missingVars,
         message: `Please set the following environment variables: ${missingVars.join(', ')}`,
-        envCheck
+        envCheck,
       });
     }
 
     // Test Google API connection
     console.log('🧪 Testing Google API connection...');
     const connectionTest = await gbpService.testConnection();
-    
+
     if (!connectionTest.success) {
       return NextResponse.json({
         success: false,
         error: 'Google API connection failed',
         message: connectionTest.message,
-        envCheck
+        envCheck,
       });
     }
 
@@ -66,17 +66,19 @@ export async function GET(request: NextRequest) {
         accountsFound: locations.length,
         accounts: locations.slice(0, 3), // Show first 3 accounts for privacy
         envCheck,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error: any) {
     console.error('Google API test error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Test failed',
-      message: error.message,
-      details: error.stack?.split('\n').slice(0, 5) // First 5 lines of stack trace
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Test failed',
+        message: error.message,
+        details: error.stack?.split('\n').slice(0, 5), // First 5 lines of stack trace
+      },
+      { status: 500 }
+    );
   }
-} 
+}

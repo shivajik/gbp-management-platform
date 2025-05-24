@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 interface BusinessProfile {
   id: string;
@@ -23,10 +29,13 @@ interface BusinessContextType {
   fetchBusinesses: () => Promise<void>;
 }
 
-const BusinessContext = createContext<BusinessContextType | undefined>(undefined);
+const BusinessContext = createContext<BusinessContextType | undefined>(
+  undefined
+);
 
 export function BusinessProvider({ children }: { children: ReactNode }) {
-  const [selectedBusiness, setSelectedBusinessState] = useState<BusinessProfile | null>(null);
+  const [selectedBusiness, setSelectedBusinessState] =
+    useState<BusinessProfile | null>(null);
   const [businesses, setBusinesses] = useState<BusinessProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -63,33 +72,39 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const response = await fetch('/api/business-profiles');
       const result = await response.json();
-      
+
       if (result.success && result.profiles) {
         setBusinesses(result.profiles);
-        
+
         // Check if currently selected business is still active
         const savedBusinessId = localStorage.getItem('selectedBusinessId');
         if (savedBusinessId) {
-          const stillActive = result.profiles.find((b: BusinessProfile) => b.id === savedBusinessId);
+          const stillActive = result.profiles.find(
+            (b: BusinessProfile) => b.id === savedBusinessId
+          );
           if (!stillActive && selectedBusiness) {
             // Currently selected business is no longer active, clear selection
             setSelectedBusiness(null);
-            console.log('Previously selected business is no longer active, clearing selection');
+            console.log(
+              'Previously selected business is no longer active, clearing selection'
+            );
           }
         }
-        
+
         // Auto-select first business if none is selected and businesses are available
         if (!selectedBusiness && result.profiles.length > 0) {
           const savedBusinessId = localStorage.getItem('selectedBusinessId');
           let businessToSelect = result.profiles[0];
-          
+
           if (savedBusinessId) {
-            const savedBusiness = result.profiles.find((b: BusinessProfile) => b.id === savedBusinessId);
+            const savedBusiness = result.profiles.find(
+              (b: BusinessProfile) => b.id === savedBusinessId
+            );
             if (savedBusiness) {
               businessToSelect = savedBusiness;
             }
           }
-          
+
           setSelectedBusiness(businessToSelect);
         }
       }
@@ -122,4 +137,4 @@ export function useBusiness() {
     throw new Error('useBusiness must be used within a BusinessProvider');
   }
   return context;
-} 
+}

@@ -55,31 +55,32 @@ export class GoogleBusinessProfileService {
       });
 
       const response = await accountManagement.accounts.list();
-      
+
       return {
         success: true,
-        message: `Connected successfully. Found ${response.data.accounts?.length || 0} accounts.`
+        message: `Connected successfully. Found ${response.data.accounts?.length || 0} accounts.`,
       };
     } catch (error: any) {
       console.error('Google API connection test failed:', error);
-      
+
       if (error.message?.includes('invalid_grant')) {
         return {
           success: false,
-          message: 'Invalid refresh token. Please re-authenticate with Google.'
+          message: 'Invalid refresh token. Please re-authenticate with Google.',
         };
       }
-      
+
       if (error.message?.includes('access_denied')) {
         return {
           success: false,
-          message: 'Access denied. Please check your API credentials and permissions.'
+          message:
+            'Access denied. Please check your API credentials and permissions.',
         };
       }
 
       return {
         success: false,
-        message: `Connection failed: ${error.message}`
+        message: `Connection failed: ${error.message}`,
       };
     }
   }
@@ -106,7 +107,7 @@ export class GoogleBusinessProfileService {
       return accounts.map(account => ({
         name: account.name,
         displayName: account.accountName,
-        type: account.type
+        type: account.type,
       }));
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -120,14 +121,14 @@ export class GoogleBusinessProfileService {
   async getReviews(locationName: string): Promise<GBPReview[]> {
     try {
       console.log(`🔍 Fetching reviews for location: ${locationName}`);
-      
+
       // Use the v4 API which still supports review access
       // locationName should be in format: accounts/{accountId}/locations/{locationId}
       const response = await fetch(
         `https://mybusiness.googleapis.com/v4/${locationName}/reviews`,
         {
           headers: {
-            'Authorization': `Bearer ${await this.getAccessToken()}`,
+            Authorization: `Bearer ${await this.getAccessToken()}`,
             'Content-Type': 'application/json',
           },
         }
@@ -136,15 +137,21 @@ export class GoogleBusinessProfileService {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API Error Response:', errorText);
-        
+
         // Handle specific error cases
         if (response.status === 403) {
-          throw new Error('Access denied. Please ensure you have Google Business Profile API access and proper permissions.');
+          throw new Error(
+            'Access denied. Please ensure you have Google Business Profile API access and proper permissions.'
+          );
         } else if (response.status === 404) {
-          throw new Error('Reviews not found. Please check the location name format.');
+          throw new Error(
+            'Reviews not found. Please check the location name format.'
+          );
         }
-        
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+
+        throw new Error(
+          `API request failed: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -177,7 +184,7 @@ export class GoogleBusinessProfileService {
         {
           method: 'PUT',
           headers: {
-            'Authorization': `Bearer ${await this.getAccessToken()}`,
+            Authorization: `Bearer ${await this.getAccessToken()}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -187,7 +194,9 @@ export class GoogleBusinessProfileService {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to create reply: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to create reply: ${response.status} ${response.statusText}`
+        );
       }
     } catch (error) {
       console.error('Error creating review reply:', error);
@@ -200,11 +209,11 @@ export class GoogleBusinessProfileService {
    */
   private convertStarRating(starRating: string): number {
     const ratingMap = {
-      'ONE': 1,
-      'TWO': 2,
-      'THREE': 3,
-      'FOUR': 4,
-      'FIVE': 5,
+      ONE: 1,
+      TWO: 2,
+      THREE: 3,
+      FOUR: 4,
+      FIVE: 5,
     };
     return ratingMap[starRating as keyof typeof ratingMap] || 3;
   }
@@ -212,7 +221,10 @@ export class GoogleBusinessProfileService {
   /**
    * Determine sentiment from rating and content
    */
-  private determineSentiment(rating: number, content?: string): 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' {
+  private determineSentiment(
+    rating: number,
+    content?: string
+  ): 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' {
     if (rating >= 4) return 'POSITIVE';
     if (rating <= 2) return 'NEGATIVE';
     return 'NEUTRAL';
@@ -221,10 +233,13 @@ export class GoogleBusinessProfileService {
   /**
    * Sync reviews from GBP to local database (with improved error handling)
    */
-  async syncReviewsToDatabase(businessProfileId: string, googleBusinessId: string) {
+  async syncReviewsToDatabase(
+    businessProfileId: string,
+    googleBusinessId: string
+  ) {
     try {
       console.log(`🔄 Syncing reviews for business ${googleBusinessId}...`);
-      
+
       // First test the connection
       const connectionTest = await this.testConnection();
       if (!connectionTest.success) {
@@ -235,9 +250,12 @@ export class GoogleBusinessProfileService {
 
       // For now, let's create some mock reviews to demonstrate the functionality
       // In production, you would use the actual API call above
-      const mockReviews = await this.createMockReviewsForTesting(businessProfileId);
-      
-      console.log(`📊 Mock sync complete: ${mockReviews.length} reviews created for testing`);
+      const mockReviews =
+        await this.createMockReviewsForTesting(businessProfileId);
+
+      console.log(
+        `📊 Mock sync complete: ${mockReviews.length} reviews created for testing`
+      );
       return { syncedCount: mockReviews.length, newCount: mockReviews.length };
 
       // Uncomment below for actual GBP API integration once permissions are set up
@@ -296,9 +314,11 @@ export class GoogleBusinessProfileService {
         googleReviewId: `gbp_sync_${Date.now()}_1`,
         businessProfileId,
         reviewerName: 'John Smith',
-        reviewerPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+        reviewerPhotoUrl:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
         rating: 5,
-        content: 'Excellent service from the Google Business Profile sync! Really impressed with the professionalism and quality.',
+        content:
+          'Excellent service from the Google Business Profile sync! Really impressed with the professionalism and quality.',
         publishedAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
         status: 'NEW' as const,
         sentiment: 'POSITIVE' as const,
@@ -308,14 +328,16 @@ export class GoogleBusinessProfileService {
         googleReviewId: `gbp_sync_${Date.now()}_2`,
         businessProfileId,
         reviewerName: 'Emma Johnson',
-        reviewerPhotoUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b17c?w=100&h=100&fit=crop&crop=face',
+        reviewerPhotoUrl:
+          'https://images.unsplash.com/photo-1494790108755-2616b612b17c?w=100&h=100&fit=crop&crop=face',
         rating: 4,
-        content: 'Good experience overall. The Google integration worked well and the team was helpful.',
+        content:
+          'Good experience overall. The Google integration worked well and the team was helpful.',
         publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
         status: 'NEW' as const,
         sentiment: 'POSITIVE' as const,
         isVerified: true,
-      }
+      },
     ];
 
     const createdReviews = [];
@@ -323,7 +345,9 @@ export class GoogleBusinessProfileService {
       try {
         const review = await prisma.review.create({ data: reviewData });
         createdReviews.push(review);
-        console.log(`✅ Created mock review: ${review.reviewerName} - ${review.rating}⭐`);
+        console.log(
+          `✅ Created mock review: ${review.reviewerName} - ${review.rating}⭐`
+        );
       } catch (error) {
         console.warn('Review might already exist:', reviewData.reviewerName);
       }
@@ -334,4 +358,4 @@ export class GoogleBusinessProfileService {
 }
 
 // Export singleton instance
-export const gbpService = new GoogleBusinessProfileService(); 
+export const gbpService = new GoogleBusinessProfileService();

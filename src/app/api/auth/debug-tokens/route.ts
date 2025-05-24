@@ -7,7 +7,7 @@ import prisma from '@/lib/db';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -41,7 +41,9 @@ export async function GET(request: NextRequest) {
     }
 
     const now = new Date();
-    const expiresAt = account.expires_at ? new Date(account.expires_at * 1000) : null;
+    const expiresAt = account.expires_at
+      ? new Date(account.expires_at * 1000)
+      : null;
     const isExpired = expiresAt ? now > expiresAt : false;
 
     return NextResponse.json({
@@ -52,7 +54,9 @@ export async function GET(request: NextRequest) {
       hasRefreshToken: !!account.refresh_token,
       isExpired,
       expiresAt: expiresAt?.toISOString(),
-      timeUntilExpiry: expiresAt ? Math.max(0, expiresAt.getTime() - now.getTime()) : null,
+      timeUntilExpiry: expiresAt
+        ? Math.max(0, expiresAt.getTime() - now.getTime())
+        : null,
       scope: account.scope,
       tokenType: account.token_type,
       lastUpdated: account.updatedAt.toISOString(),
@@ -64,11 +68,11 @@ export async function GET(request: NextRequest) {
         expiresAtTimestamp: account.expires_at,
       },
       needsReconnection: !account.refresh_token || isExpired,
-      recommendation: !account.refresh_token 
+      recommendation: !account.refresh_token
         ? 'No refresh token available. Please reconnect your Google account to enable automatic token refresh.'
-        : isExpired 
-        ? 'Access token has expired and refresh failed. Please reconnect your Google account.'
-        : 'Token is valid and should work properly.',
+        : isExpired
+          ? 'Access token has expired and refresh failed. Please reconnect your Google account.'
+          : 'Token is valid and should work properly.',
     });
   } catch (error) {
     console.error('Error debugging Google tokens:', error);
@@ -77,4 +81,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

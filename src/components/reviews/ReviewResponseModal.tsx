@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  X, 
+import {
+  X,
   Send,
   Star,
   User,
@@ -16,7 +16,7 @@ import {
   Minus,
   RefreshCw,
   Save,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -52,7 +52,7 @@ export default function ReviewResponseModal({
   onClose,
   onSuccess,
   review,
-  businessProfileId
+  businessProfileId,
 }: ReviewResponseModalProps) {
   const [responseContent, setResponseContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,18 +61,20 @@ export default function ReviewResponseModal({
   const [loadingAI, setLoadingAI] = useState(false);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'compose' | 'suggestions' | 'templates'>('compose');
+  const [selectedTab, setSelectedTab] = useState<
+    'compose' | 'suggestions' | 'templates'
+  >('compose');
 
   // Get star display for ratings
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
+        {[1, 2, 3, 4, 5].map(star => (
           <Star
             key={star}
             className={`h-3 w-3 ${
-              star <= rating 
-                ? 'text-yellow-400 fill-yellow-400' 
+              star <= rating
+                ? 'fill-yellow-400 text-yellow-400'
                 : 'text-gray-300'
             }`}
           />
@@ -85,25 +87,25 @@ export default function ReviewResponseModal({
   const getSentimentDisplay = (sentiment: string) => {
     switch (sentiment) {
       case 'POSITIVE':
-        return { 
-          icon: ThumbsUp, 
-          color: 'text-green-600', 
-          bg: 'bg-green-100', 
-          label: 'Positive' 
+        return {
+          icon: ThumbsUp,
+          color: 'text-green-600',
+          bg: 'bg-green-100',
+          label: 'Positive',
         };
       case 'NEGATIVE':
-        return { 
-          icon: ThumbsDown, 
-          color: 'text-red-600', 
-          bg: 'bg-red-100', 
-          label: 'Negative' 
+        return {
+          icon: ThumbsDown,
+          color: 'text-red-600',
+          bg: 'bg-red-100',
+          label: 'Negative',
         };
       default:
-        return { 
-          icon: Minus, 
-          color: 'text-gray-600', 
-          bg: 'bg-gray-100', 
-          label: 'Neutral' 
+        return {
+          icon: Minus,
+          color: 'text-gray-600',
+          bg: 'bg-gray-100',
+          label: 'Neutral',
         };
     }
   };
@@ -112,12 +114,12 @@ export default function ReviewResponseModal({
   const generateAISuggestions = async () => {
     try {
       setLoadingAI(true);
-      
+
       // Mock AI suggestions based on sentiment and content
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      
+
       const suggestions = [];
-      
+
       if (review.sentiment === 'POSITIVE') {
         suggestions.push(
           `Thank you so much for your wonderful ${review.rating}-star review, ${review.reviewerName}! We're thrilled to hear you had such a positive experience with us. Your feedback truly makes our day and motivates our team to continue delivering excellent service.`,
@@ -137,7 +139,7 @@ export default function ReviewResponseModal({
           `${review.reviewerName}, we appreciate your honest review. We're constantly striving to improve, and your insights are valuable to us. Thank you for choosing us, and we hope your next experience will be even better.`
         );
       }
-      
+
       setAiSuggestions(suggestions);
     } catch (error) {
       console.error('Error generating AI suggestions:', error);
@@ -151,41 +153,45 @@ export default function ReviewResponseModal({
   const loadTemplates = async () => {
     try {
       setLoadingTemplates(true);
-      
+
       // Mock templates based on sentiment
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       const mockTemplates: ResponseTemplate[] = [
         {
           id: 'template-1',
           name: 'Thank You - Positive',
-          content: 'Thank you so much for your wonderful review! We truly appreciate your business and are thrilled you had a great experience.',
+          content:
+            'Thank you so much for your wonderful review! We truly appreciate your business and are thrilled you had a great experience.',
           sentiment: 'POSITIVE',
-          usageCount: 25
+          usageCount: 25,
         },
         {
           id: 'template-2',
           name: 'Apology - Service Issue',
-          content: 'We sincerely apologize for the service issues you experienced. This doesn\'t reflect our usual standards, and we\'d love the opportunity to make this right.',
+          content:
+            "We sincerely apologize for the service issues you experienced. This doesn't reflect our usual standards, and we'd love the opportunity to make this right.",
           sentiment: 'NEGATIVE',
-          usageCount: 12
+          usageCount: 12,
         },
         {
           id: 'template-3',
           name: 'Generic Thanks',
-          content: 'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service.',
+          content:
+            'Thank you for taking the time to leave a review. Your feedback is valuable to us as we continue to improve our service.',
           sentiment: 'NEUTRAL',
-          usageCount: 18
+          usageCount: 18,
         },
         {
           id: 'template-4',
           name: 'Exceptional Service',
-          content: 'We\'re absolutely delighted that we exceeded your expectations! Thank you for recognizing our team\'s hard work.',
+          content:
+            "We're absolutely delighted that we exceeded your expectations! Thank you for recognizing our team's hard work.",
           sentiment: 'POSITIVE',
-          usageCount: 8
-        }
+          usageCount: 8,
+        },
       ];
-      
+
       setTemplates(mockTemplates);
     } catch (error) {
       console.error('Error loading templates:', error);
@@ -204,18 +210,18 @@ export default function ReviewResponseModal({
 
     try {
       setLoading(true);
-      
+
       const response = await fetch(`/api/reviews/${review.id}/response`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: responseContent.trim(),
-          businessProfileId
+          businessProfileId,
         }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success('Response submitted successfully');
         onSuccess();
@@ -254,17 +260,19 @@ export default function ReviewResponseModal({
   const SentimentIcon = sentimentDisplay.icon;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-background rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-xl bg-background shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between border-b border-border p-6">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Respond to Review</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              Respond to Review
+            </h2>
             <p className="text-sm text-muted-foreground">
               Craft a thoughtful response to engage with your customer
             </p>
           </div>
-          
+
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -272,44 +280,58 @@ export default function ReviewResponseModal({
 
         <div className="flex h-[calc(90vh-140px)]">
           {/* Review Preview - Left Side */}
-          <div className="w-1/2 p-6 border-r border-border overflow-y-auto">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Review Details</h3>
-            
+          <div className="w-1/2 overflow-y-auto border-r border-border p-6">
+            <h3 className="mb-4 text-lg font-semibold text-foreground">
+              Review Details
+            </h3>
+
             <div className="card bg-muted/30">
               <div className="card-content p-4">
                 {/* Reviewer Info */}
-                <div className="flex items-start gap-3 mb-4">
+                <div className="mb-4 flex items-start gap-3">
                   <div className="flex-shrink-0">
                     {review.reviewerPhotoUrl ? (
                       <img
                         src={review.reviewerPhotoUrl}
                         alt={review.reviewerName}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="h-10 w-10 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                         <User className="h-5 w-5 text-muted-foreground" />
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold text-foreground">{review.reviewerName}</h4>
+                    <div className="mb-1 flex items-center gap-2">
+                      <h4 className="font-semibold text-foreground">
+                        {review.reviewerName}
+                      </h4>
                       {review.isVerified && (
-                        <Badge variant="secondary" className="text-xs">Verified</Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          Verified
+                        </Badge>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       {renderStars(review.rating)}
-                      <span>{new Date(review.publishedAt).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(review.publishedAt).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${sentimentDisplay.bg}`}>
-                    <SentimentIcon className={`h-3 w-3 ${sentimentDisplay.color}`} />
-                    <span className={`text-xs font-medium ${sentimentDisplay.color}`}>
+
+                  <div
+                    className={`flex items-center gap-1 rounded-full px-2 py-1 ${sentimentDisplay.bg}`}
+                  >
+                    <SentimentIcon
+                      className={`h-3 w-3 ${sentimentDisplay.color}`}
+                    />
+                    <span
+                      className={`text-xs font-medium ${sentimentDisplay.color}`}
+                    >
                       {sentimentDisplay.label}
                     </span>
                   </div>
@@ -317,8 +339,10 @@ export default function ReviewResponseModal({
 
                 {/* Review Content */}
                 {review.content && (
-                  <div className="bg-background rounded-lg p-3">
-                    <p className="text-foreground leading-relaxed">{review.content}</p>
+                  <div className="rounded-lg bg-background p-3">
+                    <p className="leading-relaxed text-foreground">
+                      {review.content}
+                    </p>
                   </div>
                 )}
               </div>
@@ -326,7 +350,9 @@ export default function ReviewResponseModal({
 
             {/* Response Guidelines */}
             <div className="mt-6">
-              <h4 className="font-semibold text-foreground mb-3">Response Tips</h4>
+              <h4 className="mb-3 font-semibold text-foreground">
+                Response Tips
+              </h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>• Thank the customer for their feedback</p>
                 <p>• Address their specific concerns if any</p>
@@ -338,61 +364,61 @@ export default function ReviewResponseModal({
           </div>
 
           {/* Response Composer - Right Side */}
-          <div className="w-1/2 flex flex-col">
+          <div className="flex w-1/2 flex-col">
             {/* Tabs */}
             <div className="flex border-b border-border">
               <button
                 onClick={() => setSelectedTab('compose')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                   selectedTab === 'compose'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <MessageSquare className="h-4 w-4 mr-2 inline" />
+                <MessageSquare className="mr-2 inline h-4 w-4" />
                 Compose
               </button>
-              
+
               <button
                 onClick={() => setSelectedTab('suggestions')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                   selectedTab === 'suggestions'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Sparkles className="h-4 w-4 mr-2 inline" />
+                <Sparkles className="mr-2 inline h-4 w-4" />
                 AI Suggestions
               </button>
-              
+
               <button
                 onClick={() => setSelectedTab('templates')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                className={`border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                   selectedTab === 'templates'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <FileText className="h-4 w-4 mr-2 inline" />
+                <FileText className="mr-2 inline h-4 w-4" />
                 Templates
               </button>
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 p-6 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto p-6">
               {selectedTab === 'compose' && (
-                <div className="h-full flex flex-col">
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                <div className="flex h-full flex-col">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Your Response
                   </label>
                   <textarea
                     value={responseContent}
-                    onChange={(e) => setResponseContent(e.target.value)}
+                    onChange={e => setResponseContent(e.target.value)}
                     placeholder="Write your response to this review..."
-                    className="form-input flex-1 min-h-[200px] resize-none"
+                    className="form-input min-h-[200px] flex-1 resize-none"
                     maxLength={1000}
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     {responseContent.length}/1000 characters
                   </p>
                 </div>
@@ -400,15 +426,19 @@ export default function ReviewResponseModal({
 
               {selectedTab === 'suggestions' && (
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-foreground">AI Suggestions</h4>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h4 className="font-semibold text-foreground">
+                      AI Suggestions
+                    </h4>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={generateAISuggestions}
                       disabled={loadingAI}
                     >
-                      <RefreshCw className={`h-3 w-3 mr-1 ${loadingAI ? 'animate-spin' : ''}`} />
+                      <RefreshCw
+                        className={`mr-1 h-3 w-3 ${loadingAI ? 'animate-spin' : ''}`}
+                      />
                       Regenerate
                     </Button>
                   </div>
@@ -416,20 +446,28 @@ export default function ReviewResponseModal({
                   {loadingAI ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="p-4 border border-border rounded-lg bg-muted loading-pulse h-24"></div>
+                        <div
+                          key={i}
+                          className="loading-pulse h-24 rounded-lg border border-border bg-muted p-4"
+                        ></div>
                       ))}
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {aiSuggestions.map((suggestion, index) => (
-                        <div key={index} className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-                          <p className="text-sm text-foreground mb-3">{suggestion}</p>
+                        <div
+                          key={index}
+                          className="rounded-lg border border-border p-4 transition-colors hover:border-primary/50"
+                        >
+                          <p className="mb-3 text-sm text-foreground">
+                            {suggestion}
+                          </p>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => useSuggestion(suggestion)}
+                            onClick={() => setResponseContent(suggestion)}
                           >
-                            <Copy className="h-3 w-3 mr-1" />
+                            <Copy className="mr-1 h-3 w-3" />
                             Use This
                           </Button>
                         </div>
@@ -441,31 +479,43 @@ export default function ReviewResponseModal({
 
               {selectedTab === 'templates' && (
                 <div>
-                  <h4 className="font-semibold text-foreground mb-4">Response Templates</h4>
+                  <h4 className="mb-4 font-semibold text-foreground">
+                    Response Templates
+                  </h4>
 
                   {loadingTemplates ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="p-4 border border-border rounded-lg bg-muted loading-pulse h-24"></div>
+                        <div
+                          key={i}
+                          className="loading-pulse h-24 rounded-lg border border-border bg-muted p-4"
+                        ></div>
                       ))}
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {templates.map((template) => (
-                        <div key={template.id} className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-medium text-foreground">{template.name}</h5>
+                      {templates.map(template => (
+                        <div
+                          key={template.id}
+                          className="rounded-lg border border-border p-4 transition-colors hover:border-primary/50"
+                        >
+                          <div className="mb-2 flex items-center justify-between">
+                            <h5 className="font-medium text-foreground">
+                              {template.name}
+                            </h5>
                             <Badge variant="secondary" className="text-xs">
                               Used {template.usageCount} times
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-3">{template.content}</p>
+                          <p className="mb-3 text-sm text-muted-foreground">
+                            {template.content}
+                          </p>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => useSuggestion(template.content)}
+                            onClick={() => setResponseContent(template.content)}
                           >
-                            <Copy className="h-3 w-3 mr-1" />
+                            <Copy className="mr-1 h-3 w-3" />
                             Use Template
                           </Button>
                         </div>
@@ -477,22 +527,24 @@ export default function ReviewResponseModal({
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between p-6 border-t border-border">
+            <div className="flex items-center justify-between border-t border-border p-6">
               <div className="text-sm text-muted-foreground">
-                {responseContent.trim() ? 'Response ready to send' : 'Enter your response above'}
+                {responseContent.trim()
+                  ? 'Response ready to send'
+                  : 'Enter your response above'}
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={onClose} disabled={loading}>
                   Cancel
                 </Button>
-                
+
                 <Button
                   onClick={submitResponse}
                   disabled={!responseContent.trim() || loading}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  <Send className="h-4 w-4 mr-2" />
+                  <Send className="mr-2 h-4 w-4" />
                   {loading ? 'Sending...' : 'Send Response'}
                 </Button>
               </div>
@@ -502,4 +554,4 @@ export default function ReviewResponseModal({
       </div>
     </div>
   );
-} 
+}

@@ -1,5 +1,13 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle, Star, Users, Zap, BarChart3, Building2 } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle,
+  Star,
+  Users,
+  Zap,
+  BarChart3,
+  Building2,
+} from 'lucide-react';
 
 /**
  * Home page component - Landing page for the GBP Management Platform
@@ -13,15 +21,17 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-500 text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white">
                 <Zap className="h-4 w-4" />
               </div>
-              <span className="text-lg font-bold text-foreground">GBP Manager</span>
+              <span className="text-lg font-bold text-foreground">
+                GBP Manager
+              </span>
             </div>
             <div className="flex items-center gap-4">
               <Link
                 href="/auth/login"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Sign In
               </Link>
@@ -40,18 +50,18 @@ export default function HomePage() {
       <section className="px-6 py-24 text-center">
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 flex justify-center">
-            <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-glow">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-glow">
               <Building2 className="h-10 w-10" />
             </div>
           </div>
-          <h1 className="mb-6 heading-1 text-foreground">
+          <h1 className="heading-1 mb-6 text-foreground">
             Manage Your{' '}
             <span className="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 bg-clip-text text-transparent">
               Google Business Profiles
             </span>{' '}
             Like a Pro
           </h1>
-          <p className="mb-8 body-large text-muted-foreground max-w-3xl mx-auto">
+          <p className="body-large mx-auto mb-8 max-w-3xl text-muted-foreground">
             The complete platform for agencies and business owners to manage
             multiple GBP listings, posts, reviews, and analytics from one
             powerful dashboard.
@@ -77,12 +87,13 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="px-6 py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="heading-2 text-foreground mb-4">
+          <div className="mb-16 text-center">
+            <h2 className="heading-2 mb-4 text-foreground">
               Everything You Need to Succeed
             </h2>
-            <p className="body-large text-muted-foreground max-w-2xl mx-auto">
-              Powerful tools designed to streamline your Google Business Profile management
+            <p className="body-large mx-auto max-w-2xl text-muted-foreground">
+              Powerful tools designed to streamline your Google Business Profile
+              management
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -129,16 +140,16 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="px-6 py-24">
         <div className="mx-auto max-w-4xl">
-          <div className="card-elevated bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200/50">
+          <div className="card-elevated border-primary-200/50 bg-gradient-to-br from-primary-50 to-primary-100/50">
             <div className="card-content p-12 text-center">
-              <h2 className="heading-2 text-primary-900 mb-4">
+              <h2 className="heading-2 mb-4 text-primary-900">
                 Ready to Transform Your GBP Management?
               </h2>
-              <p className="body-large text-primary-800 mb-8 max-w-2xl mx-auto">
+              <p className="body-large mx-auto mb-8 max-w-2xl text-primary-800">
                 Join thousands of agencies and business owners who trust our
                 platform to grow their online presence.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col justify-center gap-4 sm:flex-row">
                 <Link
                   href="/auth/register"
                   className="btn-primary px-8 py-4 text-base shadow-large hover:shadow-glow"
@@ -148,7 +159,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="btn-outline px-8 py-4 text-base border-primary-300 text-primary-700 hover:bg-primary-100"
+                  className="btn-outline border-primary-300 px-8 py-4 text-base text-primary-700 hover:bg-primary-100"
                 >
                   View Demo
                 </Link>
@@ -161,12 +172,14 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border bg-card">
         <div className="mx-auto max-w-7xl px-6 py-12">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-500 text-white">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <div className="mb-4 flex items-center gap-3 md:mb-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500 text-white">
                 <Zap className="h-4 w-4" />
               </div>
-              <span className="text-lg font-bold text-foreground">GBP Manager</span>
+              <span className="text-lg font-bold text-foreground">
+                GBP Manager
+              </span>
             </div>
             <p className="caption text-muted-foreground">
               © 2024 GBP Manager. All rights reserved.
@@ -188,7 +201,12 @@ interface FeatureCardProps {
 /**
  * Feature card component for displaying platform features
  */
-function FeatureCard({ icon, title, description, color = 'primary' }: FeatureCardProps) {
+function FeatureCard({
+  icon,
+  title,
+  description,
+  color = 'primary',
+}: FeatureCardProps) {
   const colorClasses = {
     primary: 'bg-primary-100 text-primary-600',
     success: 'bg-success-100 text-success-600',
@@ -197,13 +215,17 @@ function FeatureCard({ icon, title, description, color = 'primary' }: FeatureCar
   };
 
   return (
-    <div className="card group hover:shadow-large transition-all duration-300 hover:scale-105">
+    <div className="card group transition-all duration-300 hover:scale-105 hover:shadow-large">
       <div className="card-content p-8">
-        <div className={`flex items-center justify-center w-16 h-16 rounded-xl ${colorClasses[color]} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+        <div
+          className={`flex h-16 w-16 items-center justify-center rounded-xl ${colorClasses[color]} mb-6 transition-transform duration-300 group-hover:scale-110`}
+        >
           {icon}
         </div>
-        <h3 className="heading-3 text-foreground mb-3">{title}</h3>
-        <p className="body text-muted-foreground leading-relaxed">{description}</p>
+        <h3 className="heading-3 mb-3 text-foreground">{title}</h3>
+        <p className="body leading-relaxed text-muted-foreground">
+          {description}
+        </p>
       </div>
     </div>
   );

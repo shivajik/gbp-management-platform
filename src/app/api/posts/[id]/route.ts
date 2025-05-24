@@ -12,7 +12,7 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,7 +20,10 @@ export async function GET(
     const postId = params.id;
 
     if (!postId) {
-      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
     }
 
     // Get user's organization
@@ -30,7 +33,10 @@ export async function GET(
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     // Fetch post with verification
@@ -70,7 +76,6 @@ export async function GET(
       success: true,
       post,
     });
-
   } catch (error) {
     console.error('Error fetching post:', error);
     return NextResponse.json(
@@ -87,7 +92,7 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -95,14 +100,17 @@ export async function PUT(
     const postId = params.id;
 
     if (!postId) {
-      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
     }
 
     // Parse form data for file uploads
     const formData = await request.formData();
-    
+
     const content = formData.get('content') as string;
-    const postType = formData.get('postType') as string || 'UPDATE';
+    const postType = (formData.get('postType') as string) || 'UPDATE';
     const callToActionStr = formData.get('callToAction') as string;
     const scheduledAtStr = formData.get('scheduledAt') as string;
     const status = formData.get('status') as string;
@@ -121,7 +129,10 @@ export async function PUT(
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     // Verify post exists and user has access
@@ -171,7 +182,7 @@ export async function PUT(
 
     if (status) {
       updateData.status = status as any;
-      
+
       if (status === 'PUBLISHED' && !existingPost.publishedAt) {
         updateData.publishedAt = new Date();
       }
@@ -184,16 +195,23 @@ export async function PUT(
 
     // Handle new media uploads
     const newMediaFiles: any[] = [];
-    
+
     for (const [key, value] of Array.from(formData.entries())) {
       if (key.startsWith('media_') && value instanceof File) {
         const index = key.split('_')[1];
-        const altText = formData.get(`media_${index}_alt`) as string || '';
-        const order = parseInt(formData.get(`media_${index}_order`) as string || '0');
+        const altText = (formData.get(`media_${index}_alt`) as string) || '';
+        const order = parseInt(
+          (formData.get(`media_${index}_order`) as string) || '0'
+        );
 
         try {
           // Create uploads directory if it doesn't exist
-          const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'posts');
+          const uploadsDir = path.join(
+            process.cwd(),
+            'public',
+            'uploads',
+            'posts'
+          );
           try {
             await mkdir(uploadsDir, { recursive: true });
           } catch (e) {
@@ -222,7 +240,6 @@ export async function PUT(
           });
 
           newMediaFiles.push(postImage);
-
         } catch (error) {
           console.error('Error uploading file:', error);
           // Continue with other files, don't fail the entire request
@@ -270,7 +287,6 @@ export async function PUT(
       post: completePost,
       newMediaFiles,
     });
-
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json(
@@ -287,7 +303,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -295,7 +311,10 @@ export async function DELETE(
     const postId = params.id;
 
     if (!postId) {
-      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
     }
 
     // Get user's organization
@@ -305,7 +324,10 @@ export async function DELETE(
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     // Verify post exists and user has access
@@ -367,7 +389,6 @@ export async function DELETE(
       success: true,
       message: 'Post deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting post:', error);
     return NextResponse.json(
@@ -375,4 +396,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

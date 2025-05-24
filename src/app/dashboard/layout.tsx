@@ -41,7 +41,11 @@ interface DashboardLayoutProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Business Listings', href: '/dashboard/gbp-listings', icon: Building2 },
+  {
+    name: 'Business Listings',
+    href: '/dashboard/gbp-listings',
+    icon: Building2,
+  },
   { name: 'Posts', href: '/dashboard/posts', icon: FileText },
   { name: 'Reviews', href: '/dashboard/reviews', icon: MessageSquare },
   { name: 'Q&A', href: '/dashboard/qa', icon: HelpCircle },
@@ -73,7 +77,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsProfileDropdownOpen(false);
       }
     }
@@ -86,9 +93,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="loading-spinner w-12 h-12"></div>
+          <div className="loading-spinner h-12 w-12"></div>
           <p className="body text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
@@ -108,35 +115,35 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const profileDropdownItems = [
-    { 
-      label: 'My Profile', 
-      icon: User, 
+    {
+      label: 'My Profile',
+      icon: User,
       href: '/dashboard/profile',
-      description: 'Manage your account settings'
+      description: 'Manage your account settings',
     },
-    { 
-      label: 'Organization', 
-      icon: Building, 
+    {
+      label: 'Organization',
+      icon: Building,
       href: '/dashboard/organization',
-      description: 'Manage your organization'
+      description: 'Manage your organization',
     },
-    { 
-      label: 'Billing & Subscription', 
-      icon: CreditCard, 
+    {
+      label: 'Billing & Subscription',
+      icon: CreditCard,
       href: '/dashboard/billing',
-      description: 'Manage your subscription'
+      description: 'Manage your subscription',
     },
-    { 
-      label: 'Privacy & Security', 
-      icon: Shield, 
+    {
+      label: 'Privacy & Security',
+      icon: Shield,
       href: '/dashboard/security',
-      description: 'Security settings'
+      description: 'Security settings',
     },
-    { 
-      label: 'Help & Support', 
-      icon: LifeBuoy, 
+    {
+      label: 'Help & Support',
+      icon: LifeBuoy,
       href: '/dashboard/support',
-      description: 'Get help and support'
+      description: 'Get help and support',
     },
   ];
 
@@ -144,24 +151,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <BusinessProvider>
       <div className="min-h-screen bg-background">
         {/* Modern Sidebar */}
-        <div className="fixed inset-y-0 left-0 z-40 w-72 bg-card border-r border-border shadow-large">
-          <div className="flex flex-col h-full">
+        <div className="fixed inset-y-0 left-0 z-40 w-72 border-r border-border bg-card shadow-large">
+          <div className="flex h-full flex-col">
             {/* Brand Header */}
-            <div className="flex items-center h-18 px-6 border-b border-border">
+            <div className="flex h-18 items-center border-b border-border px-6">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-500 text-white shadow-soft">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white shadow-soft">
                   <Zap className="h-5 w-5" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-foreground">GBP Manager</h1>
+                  <h1 className="text-lg font-bold text-foreground">
+                    GBP Manager
+                  </h1>
                   <p className="text-xs text-muted-foreground">Professional</p>
                 </div>
               </div>
             </div>
 
             {/* Navigation Menu */}
-            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-              {navigation.map((item) => {
+            <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
+              {navigation.map(item => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
@@ -171,8 +180,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   >
                     <item.icon
                       className={`h-5 w-5 transition-colors ${
-                        isActive 
-                          ? 'text-primary' 
+                        isActive
+                          ? 'text-primary'
                           : 'text-muted-foreground group-hover:text-foreground'
                       }`}
                     />
@@ -183,14 +192,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </nav>
 
             {/* Footer Info */}
-            <div className="px-4 py-4 border-t border-border">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+            <div className="border-t border-border px-4 py-4">
+              <div className="flex items-center gap-3 rounded-lg bg-secondary p-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Briefcase className="h-4 w-4" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">Professional Plan</p>
-                  <p className="text-xs text-muted-foreground">2 locations connected</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    Professional Plan
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    2 locations connected
+                  </p>
                 </div>
               </div>
             </div>
@@ -198,44 +211,50 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Top Navigation Bar */}
-        <div className="fixed top-0 left-72 right-0 z-30 bg-card/95 backdrop-blur-sm border-b border-border shadow-soft">
-          <div className="flex items-center justify-between h-16 px-6">
+        <div className="fixed left-72 right-0 top-0 z-30 border-b border-border bg-card/95 shadow-soft backdrop-blur-sm">
+          <div className="flex h-16 items-center justify-between px-6">
             {/* Search Bar */}
-            <div className="flex items-center flex-1 max-w-md">
+            <div className="flex max-w-md flex-1 items-center">
               <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search locations, posts, reviews..."
-                  className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full rounded-lg border border-border bg-secondary py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
 
             {/* Business Selector */}
-            <div className="flex items-center flex-1 justify-center">
+            <div className="flex flex-1 items-center justify-center">
               <BusinessSelector />
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-3 flex-1 justify-end">
+            <div className="flex flex-1 items-center justify-end gap-3">
               {/* Notifications */}
               <Button variant="ghost" size="sm" className="relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-3 w-3 bg-error-500 rounded-full text-xs flex items-center justify-center text-white"></span>
+                <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-error-500 text-xs text-white"></span>
               </Button>
 
               {/* Dark Mode Toggle */}
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={toggleDarkMode}
                 className="text-muted-foreground hover:text-foreground"
                 disabled={!mounted}
-                title={!mounted ? 'Loading...' : theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                title={
+                  !mounted
+                    ? 'Loading...'
+                    : theme === 'dark'
+                      ? 'Switch to light mode'
+                      : 'Switch to dark mode'
+                }
               >
                 {!mounted ? (
-                  <div className="w-5 h-5" />
+                  <div className="h-5 w-5" />
                 ) : theme === 'dark' ? (
                   <Sun className="h-5 w-5" />
                 ) : (
@@ -246,52 +265,62 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* User Profile Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors"
+                  onClick={() =>
+                    setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                  }
+                  className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-secondary"
                 >
                   <div className="flex items-center gap-3">
                     {user.image ? (
                       <img
-                        className="h-8 w-8 rounded-lg object-cover border border-border"
+                        className="h-8 w-8 rounded-lg border border-border object-cover"
                         src={user.image}
                         alt={user.name}
                       />
                     ) : (
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold text-sm">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-semibold text-white">
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <div className="text-left hidden sm:block">
-                      <p className="text-sm font-medium text-foreground">{user.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">
+                    <div className="hidden text-left sm:block">
+                      <p className="text-sm font-medium text-foreground">
+                        {user.name}
+                      </p>
+                      <p className="text-xs capitalize text-muted-foreground">
                         {user.role.replace('_', ' ').toLowerCase()}
                       </p>
                     </div>
-                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 text-muted-foreground transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`}
+                    />
                   </div>
                 </button>
 
                 {/* Dropdown Menu */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-large py-2 z-50">
+                  <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-border bg-card py-2 shadow-large">
                     {/* User Info Header */}
-                    <div className="px-4 py-3 border-b border-border">
+                    <div className="border-b border-border px-4 py-3">
                       <div className="flex items-center gap-3">
                         {user.image ? (
                           <img
-                            className="h-12 w-12 rounded-xl object-cover border-2 border-primary-200"
+                            className="h-12 w-12 rounded-xl border-2 border-primary-200 object-cover"
                             src={user.image}
                             alt={user.name}
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-semibold">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 font-semibold text-white">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground">{user.name}</p>
-                          <p className="text-xs text-muted-foreground">{user.email}</p>
-                          <p className="text-xs text-muted-foreground capitalize mt-1">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-foreground">
+                            {user.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {user.email}
+                          </p>
+                          <p className="mt-1 text-xs capitalize text-muted-foreground">
                             {user.role.replace('_', ' ').toLowerCase()}
                           </p>
                         </div>
@@ -300,17 +329,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
                     {/* Menu Items */}
                     <div className="py-2">
-                      {profileDropdownItems.map((item) => (
+                      {profileDropdownItems.map(item => (
                         <Link
                           key={item.label}
                           href={item.href}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-secondary transition-colors group"
+                          className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-secondary"
                           onClick={() => setIsProfileDropdownOpen(false)}
                         >
-                          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-secondary text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
                             <item.icon className="h-4 w-4" />
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-foreground group-hover:text-primary-600">
                               {item.label}
                             </p>
@@ -329,14 +358,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                           setIsProfileDropdownOpen(false);
                           handleSignOut();
                         }}
-                        className="flex items-center gap-3 px-4 py-3 w-full hover:bg-destructive/10 transition-colors group text-left"
+                        className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-destructive/10"
                       >
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/10 text-destructive">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
                           <LogOut className="h-4 w-4" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-destructive">Sign out</p>
-                          <p className="text-xs text-destructive/80">Sign out of your account</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-destructive">
+                            Sign out
+                          </p>
+                          <p className="text-xs text-destructive/80">
+                            Sign out of your account
+                          </p>
                         </div>
                       </button>
                     </div>
@@ -349,11 +382,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Main Content Area */}
         <div className="pl-72 pt-16">
-          <main className="min-h-screen">
-            {children}
-          </main>
+          <main className="min-h-screen">{children}</main>
         </div>
       </div>
     </BusinessProvider>
   );
-} 
+}

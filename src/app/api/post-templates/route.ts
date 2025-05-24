@@ -32,11 +32,12 @@ const samplePostTemplates: PostTemplate[] = [
     id: 'sample-post-template-1',
     name: 'New Product Announcement',
     description: 'Template for announcing new products or services',
-    content: 'Exciting news! We\'re thrilled to introduce our latest [PRODUCT/SERVICE]. It\'s designed to [BENEFIT] and we can\'t wait for you to experience it. Visit us today or call to learn more!',
+    content:
+      "Exciting news! We're thrilled to introduce our latest [PRODUCT/SERVICE]. It's designed to [BENEFIT] and we can't wait for you to experience it. Visit us today or call to learn more!",
     postType: 'UPDATE',
     callToAction: {
       type: 'CALL_NOW',
-      text: 'Call Now'
+      text: 'Call Now',
     },
     tags: ['product', 'announcement', 'new'],
     isFavorite: false,
@@ -45,19 +46,20 @@ const samplePostTemplates: PostTemplate[] = [
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-post-template-2',
     name: 'Event Invitation',
     description: 'Template for promoting upcoming events',
-    content: 'Join us for [EVENT NAME] on [DATE] at [TIME]! This exciting event will feature [HIGHLIGHTS]. Don\'t miss out on this amazing opportunity. Reserve your spot today!',
+    content:
+      "Join us for [EVENT NAME] on [DATE] at [TIME]! This exciting event will feature [HIGHLIGHTS]. Don't miss out on this amazing opportunity. Reserve your spot today!",
     postType: 'EVENT',
     callToAction: {
       type: 'LEARN_MORE',
       text: 'Learn More',
-      url: 'https://example.com/event'
+      url: 'https://example.com/event',
     },
     tags: ['event', 'invitation', 'community'],
     isFavorite: true,
@@ -66,18 +68,19 @@ const samplePostTemplates: PostTemplate[] = [
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-post-template-3',
     name: 'Special Offer',
     description: 'Template for promotional offers and discounts',
-    content: 'Limited time offer! Get [DISCOUNT]% off on [PRODUCT/SERVICE] when you [ACTION]. This amazing deal is valid until [DATE]. Don\'t wait - treat yourself today!',
+    content:
+      "Limited time offer! Get [DISCOUNT]% off on [PRODUCT/SERVICE] when you [ACTION]. This amazing deal is valid until [DATE]. Don't wait - treat yourself today!",
     postType: 'OFFER',
     callToAction: {
       type: 'BOOK',
-      text: 'Book Now'
+      text: 'Book Now',
     },
     tags: ['offer', 'discount', 'promotion'],
     isFavorite: false,
@@ -86,18 +89,19 @@ const samplePostTemplates: PostTemplate[] = [
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-post-template-4',
     name: 'Behind the Scenes',
     description: 'Template for showcasing business operations',
-    content: 'Take a peek behind the scenes! Here\'s what goes into making [PRODUCT/SERVICE] special. Our team works hard to [PROCESS/VALUE] because we believe [MISSION]. Thank you for your continued support!',
+    content:
+      "Take a peek behind the scenes! Here's what goes into making [PRODUCT/SERVICE] special. Our team works hard to [PROCESS/VALUE] because we believe [MISSION]. Thank you for your continued support!",
     postType: 'UPDATE',
     callToAction: {
       type: 'LEARN_MORE',
-      text: 'Visit Us'
+      text: 'Visit Us',
     },
     tags: ['behind-scenes', 'team', 'process'],
     isFavorite: true,
@@ -106,18 +110,19 @@ const samplePostTemplates: PostTemplate[] = [
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
+      name: 'System Templates',
+    },
   },
   {
     id: 'sample-post-template-5',
     name: 'Customer Appreciation',
     description: 'Template for thanking customers',
-    content: 'We want to take a moment to thank all our amazing customers! Your support means the world to us. As a token of our appreciation, we\'re offering [SPECIAL BENEFIT] to all our valued customers this [TIME PERIOD].',
+    content:
+      "We want to take a moment to thank all our amazing customers! Your support means the world to us. As a token of our appreciation, we're offering [SPECIAL BENEFIT] to all our valued customers this [TIME PERIOD].",
     postType: 'UPDATE',
     callToAction: {
       type: 'CALL_NOW',
-      text: 'Thank You'
+      text: 'Thank You',
     },
     tags: ['appreciation', 'customers', 'gratitude'],
     isFavorite: false,
@@ -126,9 +131,9 @@ const samplePostTemplates: PostTemplate[] = [
     updatedAt: new Date().toISOString(),
     creator: {
       id: 'system',
-      name: 'System Templates'
-    }
-  }
+      name: 'System Templates',
+    },
+  },
 ];
 
 // GET /api/post-templates - List post templates for a business
@@ -143,7 +148,10 @@ export async function GET(request: NextRequest) {
     const businessProfileId = searchParams.get('businessProfileId');
 
     if (!businessProfileId) {
-      return NextResponse.json({ error: 'Business profile ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Business profile ID is required' },
+        { status: 400 }
+      );
     }
 
     // Verify user has access to this business profile
@@ -153,17 +161,20 @@ export async function GET(request: NextRequest) {
         organization: {
           OR: [
             { ownerId: session.user.id },
-            { teamMembers: { some: { userId: session.user.id } } }
-          ]
-        }
+            { teamMembers: { some: { userId: session.user.id } } },
+          ],
+        },
       },
       include: {
-        organization: true
-      }
+        organization: true,
+      },
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found or access denied' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found or access denied' },
+        { status: 404 }
+      );
     }
 
     try {
@@ -208,23 +219,21 @@ export async function GET(request: NextRequest) {
       // For now, return sample templates with businessProfileId
       const templatesWithBusinessId = samplePostTemplates.map(template => ({
         ...template,
-        businessProfileId
+        businessProfileId,
       }));
 
       return NextResponse.json({
         success: true,
-        templates: templatesWithBusinessId
+        templates: templatesWithBusinessId,
       });
-
     } catch (dbError) {
       console.log('Database query failed, using sample templates:', dbError);
       return NextResponse.json({
         success: true,
         templates: samplePostTemplates,
-        isSampleData: true
+        isSampleData: true,
       });
     }
-
   } catch (error) {
     console.error('Error fetching post templates:', error);
     return NextResponse.json(
@@ -243,19 +252,33 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { businessProfileId, name, description, content, postType, callToAction, tags } = body;
+    const {
+      businessProfileId,
+      name,
+      description,
+      content,
+      postType,
+      callToAction,
+      tags,
+    } = body;
 
     // Validation
     if (!businessProfileId || !name?.trim() || !content?.trim()) {
-      return NextResponse.json({ 
-        error: 'Business profile ID, name, and content are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Business profile ID, name, and content are required',
+        },
+        { status: 400 }
+      );
     }
 
     if (!['UPDATE', 'EVENT', 'OFFER'].includes(postType)) {
-      return NextResponse.json({ 
-        error: 'Invalid post type. Must be UPDATE, EVENT, or OFFER' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Invalid post type. Must be UPDATE, EVENT, or OFFER',
+        },
+        { status: 400 }
+      );
     }
 
     // Verify user has access to this business profile
@@ -265,14 +288,17 @@ export async function POST(request: NextRequest) {
         organization: {
           OR: [
             { ownerId: session.user.id },
-            { teamMembers: { some: { userId: session.user.id } } }
-          ]
-        }
-      }
+            { teamMembers: { some: { userId: session.user.id } } },
+          ],
+        },
+      },
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found or access denied' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found or access denied' },
+        { status: 404 }
+      );
     }
 
     // For now, return success without actually saving to database
@@ -291,15 +317,14 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
       creator: {
         id: session.user.id,
-        name: session.user.name || session.user.email || 'Unknown User'
-      }
+        name: session.user.name || session.user.email || 'Unknown User',
+      },
     };
 
     return NextResponse.json({
       success: true,
-      template: newTemplate
+      template: newTemplate,
     });
-
   } catch (error) {
     console.error('Error creating post template:', error);
     return NextResponse.json(
@@ -307,4 +332,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

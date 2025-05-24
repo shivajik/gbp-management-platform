@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { createGoogleBusinessAPIFromSession, syncBusinessProfiles } from '@/lib/google-business-api';
+import {
+  createGoogleBusinessAPIFromSession,
+  syncBusinessProfiles,
+} from '@/lib/google-business-api';
 import prisma from '@/lib/db';
 
 // GET /api/business-profiles - List business profiles
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -34,7 +37,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User does not have an organization' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User does not have an organization' },
+        { status: 400 }
+      );
     }
 
     // Build where clause based on includeInactive parameter
@@ -84,22 +90,22 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { 
-      name, 
-      description, 
-      phoneNumber, 
-      website, 
+    const {
+      name,
+      description,
+      phoneNumber,
+      website,
       email,
       address,
       categories,
       attributes,
-      businessHours 
+      businessHours,
     } = body;
 
     // Validate required fields
@@ -116,12 +122,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User does not have an organization' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User does not have an organization' },
+        { status: 400 }
+      );
     }
 
     // Create Google Business API instance
     const api = await createGoogleBusinessAPIFromSession();
-    
+
     if (!api) {
       return NextResponse.json(
         { error: 'Failed to connect to Google Business API' },
@@ -132,7 +141,7 @@ export async function POST(request: NextRequest) {
     // Get user's Google accounts
     const accountsResponse = await api.listAccounts();
     const accounts = accountsResponse.accounts || [];
-    
+
     if (accounts.length === 0) {
       return NextResponse.json(
         { error: 'No Google Business accounts found' },
@@ -170,7 +179,7 @@ export async function POST(request: NextRequest) {
 
     // Extract Google Business ID
     const googleBusinessId = googleLocation.name?.split('/').pop();
-    
+
     if (!googleBusinessId) {
       throw new Error('Failed to get Google Business ID from created location');
     }
@@ -232,4 +241,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

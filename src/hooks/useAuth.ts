@@ -15,15 +15,17 @@ export interface AuthUser {
 export function useAuth() {
   const { data: session, status } = useSession();
 
-  const user: AuthUser | null = session?.user ? {
-    id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-    image: session.user.image,
-    role: session.user.role,
-    organizationId: session.user.organizationId,
-    emailVerified: session.user.emailVerified,
-  } : null;
+  const user: AuthUser | null = session?.user
+    ? {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        image: session.user.image,
+        role: session.user.role,
+        organizationId: session.user.organizationId,
+        emailVerified: session.user.emailVerified,
+      }
+    : null;
 
   return {
     user,
@@ -32,4 +34,4 @@ export function useAuth() {
     isUnauthenticated: status === 'unauthenticated',
     accessToken: session?.accessToken,
   };
-} 
+}

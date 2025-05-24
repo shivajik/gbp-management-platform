@@ -7,7 +7,7 @@ import { gbpService } from '@/lib/google-business';
 export async function POST() {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -15,31 +15,37 @@ export async function POST() {
     // Get user with organization
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: { 
+      include: {
         organization: {
           include: {
-            businessProfiles: true
-          }
-        }
+            businessProfiles: true,
+          },
+        },
       },
     });
 
     if (!user?.organization) {
-      return NextResponse.json({ 
-        error: 'User must be part of an organization to sync GBP listings' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'User must be part of an organization to sync GBP listings',
+        },
+        { status: 400 }
+      );
     }
 
     console.log(`🔄 Starting live GBP sync for user: ${user.email}`);
 
     // Test Google Business Profile API connection first
     const connectionTest = await gbpService.testConnection();
-    
+
     if (!connectionTest.success) {
-      return NextResponse.json({
-        error: 'Google Business Profile API connection failed',
-        details: connectionTest.message
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          error: 'Google Business Profile API connection failed',
+          details: connectionTest.message,
+        },
+        { status: 503 }
+      );
     }
 
     console.log('✅ Google Business Profile API connection successful');
@@ -49,12 +55,21 @@ export async function POST() {
     try {
       gbpLocations = await gbpService.getLocations();
       console.log(`📍 Found ${gbpLocations.length} GBP locations`);
-         } catch (error: any) {       console.error('Error fetching GBP locations:', error);       return NextResponse.json({         error: 'Failed to fetch business locations from Google',         details: error.message       }, { status: 500 });     }
+    } catch (error: any) {
+      console.error('Error fetching GBP locations:', error);
+      return NextResponse.json(
+        {
+          error: 'Failed to fetch business locations from Google',
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
 
     // Sync each location to database
     let syncedCount = 0;
     let newCount = 0;
-    
+
     for (const location of gbpLocations) {
       try {
         // Check if business profile already exists
@@ -62,10 +77,10 @@ export async function POST() {
           where: {
             OR: [
               { googleBusinessId: location.name },
-              { name: location.displayName }
+              { name: location.displayName },
             ],
-            organizationId: user.organization.id
-          }
+            organizationId: user.organization.id,
+          },
         });
 
         if (!existingProfile) {
@@ -74,10 +89,12 @@ export async function POST() {
             data: {
               googleBusinessId: location.name,
               name: location.displayName,
-                            organizationId: user.organization.id,              status: 'ACTIVE',              isVerified: true,
+              organizationId: user.organization.id,
+              status: 'ACTIVE',
+              isVerified: true,
               lastSyncAt: new Date(),
               // Add more fields as they become available from GBP API
-            }
+            },
           });
 
           console.log(`✅ Created new business profile: ${newProfile.name}`);
@@ -90,10 +107,12 @@ export async function POST() {
               lastSyncAt: new Date(),
               status: 'VERIFIED',
               isVerified: true,
-            }
+            },
           });
 
-          console.log(`🔄 Updated existing business profile: ${existingProfile.name}`);
+          console.log(
+            `🔄 Updated existing business profile: ${existingProfile.name}`
+          );
         }
 
         syncedCount++;
@@ -111,8 +130,8 @@ export async function POST() {
         googleBusinessId: true,
         status: true,
         isVerified: true,
-        lastSyncAt: true
-      }
+        lastSyncAt: true,
+      },
     });
 
     return NextResponse.json({
@@ -122,11 +141,10 @@ export async function POST() {
         totalLocations: gbpLocations.length,
         syncedCount,
         newCount,
-        existingCount: syncedCount - newCount
+        existingCount: syncedCount - newCount,
       },
-      businessProfiles: finalProfiles
+      businessProfiles: finalProfiles,
     });
-
   } catch (error) {
     console.error('Error syncing live GBP:', error);
     return NextResponse.json(
@@ -134,4 +152,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-} 
+}

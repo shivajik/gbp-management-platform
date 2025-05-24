@@ -7,13 +7,13 @@ import prisma from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { listingId, toggleType = 'analytics' } = await request.json();
-    
+
     if (!listingId) {
       return NextResponse.json(
         { error: 'Listing ID is required' },
@@ -28,7 +28,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User does not have an organization' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User does not have an organization' },
+        { status: 400 }
+      );
     }
 
     // Find the business profile
@@ -48,8 +51,9 @@ export async function POST(request: NextRequest) {
 
     if (toggleType === 'status') {
       // Toggle business active status
-      const newStatus = businessProfile.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-      
+      const newStatus =
+        businessProfile.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+
       await prisma.businessProfile.update({
         where: { id: listingId },
         data: { status: newStatus },
@@ -73,8 +77,9 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Toggle analytics selection (existing functionality)
-      const currentAttributes = businessProfile.attributes as any || {};
-      const isCurrentlySelected = currentAttributes.selectedForAnalytics === true;
+      const currentAttributes = (businessProfile.attributes as any) || {};
+      const isCurrentlySelected =
+        currentAttributes.selectedForAnalytics === true;
       const newIsSelected = !isCurrentlySelected;
 
       // Update the attributes to include selection state
@@ -112,4 +117,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

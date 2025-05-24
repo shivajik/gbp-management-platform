@@ -1,11 +1,13 @@
 # Review Management Architecture
 
 ## Overview
+
 The review management system is designed to handle reviews from Google Business Profile (GBP) while providing local database storage, response management, and analytics.
 
 ## Data Flow Architecture
 
 ### 1. Production Flow (With GBP Integration)
+
 ```mermaid
 graph TD
     A[Google Business Profile] -->|Webhook/Sync| B[Review Sync Service]
@@ -13,12 +15,13 @@ graph TD
     C --> D[Dashboard Display]
     D -->|User Response| E[Response API]
     E -->|Publish Response| A
-    
+
     F[Manual Review Creation] --> C
     G[Bulk Import] --> C
 ```
 
 ### 2. Current Development Flow
+
 ```mermaid
 graph TD
     A[Manual/Test Data] --> B[Database Storage]
@@ -30,12 +33,14 @@ graph TD
 ## Review Data Sources
 
 ### Primary Source: Google Business Profile API
+
 - **Real Customer Reviews**: Actual reviews from Google customers
 - **Automatic Sync**: Scheduled jobs fetch new reviews
 - **Webhook Integration**: Real-time notifications for new reviews
 - **Response Publishing**: Responses written in dashboard get published to Google
 
 ### Secondary Source: Manual/Import
+
 - **Test Data**: For development and testing
 - **Historical Data**: Imported from other systems
 - **Backup/Offline**: When API is unavailable
@@ -43,6 +48,7 @@ graph TD
 ## Database Schema
 
 ### Review Table
+
 ```sql
 CREATE TABLE reviews (
   id                VARCHAR PRIMARY KEY,
@@ -62,6 +68,7 @@ CREATE TABLE reviews (
 ```
 
 ### Response Table
+
 ```sql
 CREATE TABLE review_responses (
   id           VARCHAR PRIMARY KEY,
@@ -77,17 +84,18 @@ CREATE TABLE review_responses (
 ## Integration Components
 
 ### 1. Google Business Profile API Integration
+
 ```typescript
 // Service for syncing reviews from GBP
 class GBPReviewService {
   async syncReviews(businessProfileId: string) {
     const gbpReviews = await this.gbpClient.getReviews(businessProfileId);
-    
+
     for (const gbpReview of gbpReviews) {
       await this.syncSingleReview(gbpReview);
     }
   }
-  
+
   async publishResponse(reviewId: string, content: string) {
     // Publish response back to Google Business Profile
     return await this.gbpClient.createReviewReply(reviewId, content);
@@ -96,11 +104,12 @@ class GBPReviewService {
 ```
 
 ### 2. Webhook Handler
+
 ```typescript
 // Webhook endpoint for real-time review notifications
 export async function POST(request: NextRequest) {
   const webhook = await request.json();
-  
+
   if (webhook.type === 'review.created') {
     await syncNewReview(webhook.data.reviewId);
     await sendNotification(webhook.data);
@@ -109,6 +118,7 @@ export async function POST(request: NextRequest) {
 ```
 
 ### 3. Sync Scheduler
+
 ```typescript
 // Scheduled job to sync reviews regularly
 import cron from 'node-cron';
@@ -116,7 +126,7 @@ import cron from 'node-cron';
 // Sync every hour
 cron.schedule('0 * * * *', async () => {
   const businesses = await getActiveBusinessProfiles();
-  
+
   for (const business of businesses) {
     await gbpService.syncReviews(business.googleBusinessId);
   }
@@ -126,6 +136,7 @@ cron.schedule('0 * * * *', async () => {
 ## Response Management
 
 ### Response Flow
+
 1. **User writes response** in dashboard
 2. **Store in database** with pending status
 3. **Publish to Google** via GBP API
@@ -133,6 +144,7 @@ cron.schedule('0 * * * *', async () => {
 5. **Log activity** for audit trail
 
 ### Response Types
+
 - **Public Responses**: Published to Google (visible to all)
 - **Internal Notes**: Stored locally (team communication)
 - **Automated Responses**: AI-generated suggestions
@@ -140,6 +152,7 @@ cron.schedule('0 * * * *', async () => {
 ## Current Implementation Status
 
 ### ✅ Completed
+
 - Database schema and models
 - Dashboard UI for review management
 - Response creation and management
@@ -148,12 +161,14 @@ cron.schedule('0 * * * *', async () => {
 - Template management system
 
 ### 🔄 In Development
+
 - Google Business Profile API integration
 - Webhook handling for real-time sync
 - Automated response publishing
 - Notification system
 
 ### 📋 Planned
+
 - AI-powered sentiment analysis
 - Automated response suggestions
 - Bulk response operations
@@ -163,6 +178,7 @@ cron.schedule('0 * * * *', async () => {
 ## Environment Configuration
 
 ### Required API Credentials
+
 ```env
 # Google Business Profile API
 GOOGLE_CLIENT_ID=your_client_id
@@ -175,6 +191,7 @@ WEBHOOK_URL=https://yourapp.com/api/webhooks/reviews
 ```
 
 ### Rate Limiting
+
 - **GBP API**: 100 requests per 100 seconds per user
 - **Sync Frequency**: Every 15 minutes for active businesses
 - **Batch Size**: 50 reviews per request
@@ -182,17 +199,20 @@ WEBHOOK_URL=https://yourapp.com/api/webhooks/reviews
 ## Testing Strategy
 
 ### Development Data
+
 - Use test reviews in database for UI development
 - Mock GBP API responses for integration testing
 - Sample data for performance testing
 
 ### Staging Environment
+
 - Connect to Google My Business test accounts
 - Simulate webhook events
 - Test response publishing flow
 
 ### Production Monitoring
+
 - API rate limit monitoring
 - Sync success/failure tracking
 - Response publication status
-- User activity logging 
+- User activity logging

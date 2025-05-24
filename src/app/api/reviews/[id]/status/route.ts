@@ -10,7 +10,7 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,15 +18,23 @@ export async function PUT(
     const reviewId = params.id;
 
     if (!reviewId) {
-      return NextResponse.json({ error: 'Review ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Review ID is required' },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
     const { status } = body;
 
-    if (!status || !['NEW', 'RESPONDED', 'FLAGGED', 'ARCHIVED'].includes(status)) {
+    if (
+      !status ||
+      !['NEW', 'RESPONDED', 'FLAGGED', 'ARCHIVED'].includes(status)
+    ) {
       return NextResponse.json(
-        { error: 'Valid status is required (NEW, RESPONDED, FLAGGED, ARCHIVED)' },
+        {
+          error: 'Valid status is required (NEW, RESPONDED, FLAGGED, ARCHIVED)',
+        },
         { status: 400 }
       );
     }
@@ -38,7 +46,10 @@ export async function PUT(
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     try {
@@ -69,8 +80,11 @@ export async function PUT(
             isMockData: true,
           });
         }
-        
-        return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+
+        return NextResponse.json(
+          { error: 'Review not found' },
+          { status: 404 }
+        );
       }
 
       const updatedReview = await prisma.review.update({
@@ -112,11 +126,13 @@ export async function PUT(
         success: true,
         review: updatedReview,
       });
-
     } catch (dbError) {
       // If Review model doesn't exist yet, return mock success for sample reviews
-      console.warn('Review model not available, returning mock response:', dbError);
-      
+      console.warn(
+        'Review model not available, returning mock response:',
+        dbError
+      );
+
       if (reviewId.startsWith('sample-')) {
         return NextResponse.json({
           success: true,
@@ -127,7 +143,6 @@ export async function PUT(
 
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
-
   } catch (error) {
     console.error('Error updating review status:', error);
     return NextResponse.json(
@@ -135,4 +150,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-} 
+}

@@ -1,8 +1,9 @@
 import { useBusiness } from '@/contexts/BusinessContext';
 
 export function useSelectedBusiness() {
-  const { selectedBusiness, setSelectedBusiness, businesses, isLoading } = useBusiness();
-  
+  const { selectedBusiness, setSelectedBusiness, businesses, isLoading } =
+    useBusiness();
+
   return {
     selectedBusiness,
     setSelectedBusiness,
@@ -11,4 +12,4 @@ export function useSelectedBusiness() {
     hasBusinesses: businesses.length > 0,
     isBusinessSelected: !!selectedBusiness,
   };
-} 
+}

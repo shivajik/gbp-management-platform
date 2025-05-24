@@ -9,7 +9,7 @@ import path from 'path';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     const businessProfile = await prisma.businessProfile.findFirst({
@@ -44,7 +47,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     // Build where clause for filtering
@@ -85,7 +91,6 @@ export async function GET(request: NextRequest) {
       posts,
       count: posts.length,
     });
-
   } catch (error) {
     console.error('Error fetching posts:', error);
     return NextResponse.json(
@@ -99,20 +104,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Parse form data for file uploads
     const formData = await request.formData();
-    
+
     const businessProfileId = formData.get('businessProfileId') as string;
     const content = formData.get('content') as string;
-    const postType = formData.get('postType') as string || 'UPDATE';
+    const postType = (formData.get('postType') as string) || 'UPDATE';
     const callToActionStr = formData.get('callToAction') as string;
     const scheduledAtStr = formData.get('scheduledAt') as string;
-    const status = formData.get('status') as string || 'DRAFT';
+    const status = (formData.get('status') as string) || 'DRAFT';
 
     if (!businessProfileId || !content) {
       return NextResponse.json(
@@ -128,7 +133,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     const businessProfile = await prisma.businessProfile.findFirst({
@@ -139,7 +147,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     // Parse optional fields
@@ -183,16 +194,23 @@ export async function POST(request: NextRequest) {
 
     // Handle media uploads
     const mediaFiles: any[] = [];
-    
+
     for (const [key, value] of Array.from(formData.entries())) {
       if (key.startsWith('media_') && value instanceof File) {
         const index = key.split('_')[1];
-        const altText = formData.get(`media_${index}_alt`) as string || '';
-        const order = parseInt(formData.get(`media_${index}_order`) as string || '0');
+        const altText = (formData.get(`media_${index}_alt`) as string) || '';
+        const order = parseInt(
+          (formData.get(`media_${index}_order`) as string) || '0'
+        );
 
         try {
           // Create uploads directory if it doesn't exist
-          const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'posts');
+          const uploadsDir = path.join(
+            process.cwd(),
+            'public',
+            'uploads',
+            'posts'
+          );
           try {
             await mkdir(uploadsDir, { recursive: true });
           } catch (e) {
@@ -221,7 +239,6 @@ export async function POST(request: NextRequest) {
           });
 
           mediaFiles.push(postImage);
-
         } catch (error) {
           console.error('Error uploading file:', error);
           // Continue with other files, don't fail the entire request
@@ -269,7 +286,6 @@ export async function POST(request: NextRequest) {
       post: completePost,
       mediaFiles,
     });
-
   } catch (error) {
     console.error('Error creating post:', error);
     return NextResponse.json(
@@ -277,4 +293,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

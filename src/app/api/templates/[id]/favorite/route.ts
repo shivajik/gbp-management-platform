@@ -85,9 +85,8 @@ export async function POST(
 
       return NextResponse.json({
         success: true,
-        isFavorite: isFavorite
+        isFavorite: isFavorite,
       });
-
     } catch (dbError) {
       console.error('Database operation failed:', dbError);
       return NextResponse.json(
@@ -95,7 +94,6 @@ export async function POST(
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error toggling favorite status:', error);
     return NextResponse.json(
@@ -103,4 +101,4 @@ export async function POST(
       { status: 500 }
     );
   }
-} 
+}

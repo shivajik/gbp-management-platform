@@ -6,7 +6,7 @@ import { useBusiness } from '@/contexts/BusinessContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Star,
   Search,
   Filter,
@@ -25,7 +25,7 @@ import {
   Minus,
   RefreshCw,
   User,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ReviewResponseModal from '@/components/reviews/ReviewResponseModal';
@@ -83,7 +83,7 @@ export default function ReviewsPage() {
     averageRating: 0,
     responseRate: 0,
     sentimentBreakdown: { positive: 0, neutral: 0, negative: 0 },
-    ratingBreakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    ratingBreakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +96,9 @@ export default function ReviewsPage() {
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
   const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<'loading' | 'database' | 'sample'>('loading');
+  const [dataSource, setDataSource] = useState<
+    'loading' | 'database' | 'sample'
+  >('loading');
 
   // Fetch reviews from API
   const fetchReviews = async (forceCreate = false) => {
@@ -108,23 +110,25 @@ export default function ReviewsPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const url = `/api/reviews?businessProfileId=${selectedBusiness.id}&limit=50${forceCreate ? '&forceCreate=true' : ''}`;
       const response = await fetch(url);
       const result = await response.json();
-      
+
       if (result.success) {
         setReviews(result.reviews || []);
         setStats(result.stats || stats);
         setDataSource(result.isSampleData ? 'sample' : 'database');
-        
+
         // Show info about data type
         if (result.isSampleData && result.error) {
           toast.error(result.error);
         } else if (result.isSampleData) {
           toast('Showing sample data - no real reviews found', { icon: 'ℹ️' });
         } else if (forceCreate && result.reviews?.length > 0) {
-          toast.success(`Created ${result.reviews.length} test reviews in database!`);
+          toast.success(
+            `Created ${result.reviews.length} test reviews in database!`
+          );
         }
       } else {
         setError(result.error || 'Failed to fetch reviews');
@@ -150,7 +154,7 @@ export default function ReviewsPage() {
 
     try {
       setLoading(true);
-      
+
       const response = await fetch('/api/reviews/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -158,12 +162,16 @@ export default function ReviewsPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        toast.success(`Synced ${result.data.newCount} new reviews from Google!`);
+        toast.success(
+          `Synced ${result.data.newCount} new reviews from Google!`
+        );
         await fetchReviews(); // Refresh the list
       } else {
-        toast.error(result.message || 'Failed to sync from Google Business Profile');
+        toast.error(
+          result.message || 'Failed to sync from Google Business Profile'
+        );
       }
     } catch (error) {
       console.error('Error syncing from GBP:', error);
@@ -177,10 +185,10 @@ export default function ReviewsPage() {
   const testGoogleAPI = async () => {
     try {
       setLoading(true);
-      
+
       const response = await fetch('/api/reviews/test-google');
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success('Google API connection successful!');
         console.log('Google API Test Result:', result.data);
@@ -200,7 +208,7 @@ export default function ReviewsPage() {
   const updateReviewStatus = async (reviewId: string, status: string) => {
     try {
       setActionLoading(reviewId);
-      
+
       const response = await fetch(`/api/reviews/${reviewId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -208,11 +216,13 @@ export default function ReviewsPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        setReviews(prev => prev.map(r => 
-          r.id === reviewId ? { ...r, status: status as any } : r
-        ));
+        setReviews(prev =>
+          prev.map(r =>
+            r.id === reviewId ? { ...r, status: status as any } : r
+          )
+        );
         toast.success(`Review ${status.toLowerCase()}`);
       } else {
         toast.error(result.error || 'Failed to update review status');
@@ -230,12 +240,12 @@ export default function ReviewsPage() {
     const starSize = size === 'sm' ? 'h-3 w-3' : 'h-4 w-4';
     return (
       <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => (
+        {[1, 2, 3, 4, 5].map(star => (
           <Star
             key={star}
             className={`${starSize} ${
-              star <= rating 
-                ? 'text-yellow-400 fill-yellow-400' 
+              star <= rating
+                ? 'fill-yellow-400 text-yellow-400'
                 : 'text-gray-300'
             }`}
           />
@@ -248,25 +258,25 @@ export default function ReviewsPage() {
   const getSentimentDisplay = (sentiment: string) => {
     switch (sentiment) {
       case 'POSITIVE':
-        return { 
-          icon: ThumbsUp, 
-          color: 'text-green-600', 
-          bg: 'bg-green-100', 
-          label: 'Positive' 
+        return {
+          icon: ThumbsUp,
+          color: 'text-green-600',
+          bg: 'bg-green-100',
+          label: 'Positive',
         };
       case 'NEGATIVE':
-        return { 
-          icon: ThumbsDown, 
-          color: 'text-red-600', 
-          bg: 'bg-red-100', 
-          label: 'Negative' 
+        return {
+          icon: ThumbsDown,
+          color: 'text-red-600',
+          bg: 'bg-red-100',
+          label: 'Negative',
         };
       default:
-        return { 
-          icon: Minus, 
-          color: 'text-gray-600', 
-          bg: 'bg-gray-100', 
-          label: 'Neutral' 
+        return {
+          icon: Minus,
+          color: 'text-gray-600',
+          bg: 'bg-gray-100',
+          label: 'Neutral',
         };
     }
   };
@@ -275,38 +285,54 @@ export default function ReviewsPage() {
   const formatTimeAgo = (date: string) => {
     const now = new Date();
     const reviewDate = new Date(date);
-    const diffInSeconds = Math.floor((now.getTime() - reviewDate.getTime()) / 1000);
-    
+    const diffInSeconds = Math.floor(
+      (now.getTime() - reviewDate.getTime()) / 1000
+    );
+
     if (diffInSeconds < 60) return 'Just now';
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
     return reviewDate.toLocaleDateString();
   };
 
   // Filter and sort reviews
   const filteredAndSortedReviews = reviews
     .filter(review => {
-      const matchesSearch = !searchTerm || 
+      const matchesSearch =
+        !searchTerm ||
         review.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         review.reviewerName.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'ALL' || review.status === statusFilter;
-      const matchesRating = ratingFilter === 'ALL' || review.rating.toString() === ratingFilter;
-      const matchesSentiment = sentimentFilter === 'ALL' || review.sentiment === sentimentFilter;
-      
-      return matchesSearch && matchesStatus && matchesRating && matchesSentiment;
+      const matchesStatus =
+        statusFilter === 'ALL' || review.status === statusFilter;
+      const matchesRating =
+        ratingFilter === 'ALL' || review.rating.toString() === ratingFilter;
+      const matchesSentiment =
+        sentimentFilter === 'ALL' || review.sentiment === sentimentFilter;
+
+      return (
+        matchesSearch && matchesStatus && matchesRating && matchesSentiment
+      );
     })
     .sort((a, b) => {
       switch (sortBy) {
         case 'oldest':
-          return new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
+          return (
+            new Date(a.publishedAt).getTime() -
+            new Date(b.publishedAt).getTime()
+          );
         case 'rating-high':
           return b.rating - a.rating;
         case 'rating-low':
           return a.rating - b.rating;
         case 'newest':
         default:
-          return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+          return (
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
+          );
       }
     });
 
@@ -320,10 +346,12 @@ export default function ReviewsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="card-elevated">
             <div className="card-content p-12 text-center">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-xl bg-muted">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-muted">
                 <MessageSquare className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="heading-3 text-foreground mb-2">Select a Business</h3>
+              <h3 className="heading-3 mb-2 text-foreground">
+                Select a Business
+              </h3>
               <p className="body text-muted-foreground">
                 Please select a business from the dropdown to manage reviews.
               </p>
@@ -339,76 +367,93 @@ export default function ReviewsPage() {
       <div className="mx-auto max-w-7xl p-6">
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="heading-2 text-foreground">Reviews</h1>
               <div className="flex items-center gap-3">
                 <p className="body-small text-muted-foreground">
-                  Monitor and respond to customer reviews for {selectedBusiness.name}
+                  Monitor and respond to customer reviews for{' '}
+                  {selectedBusiness.name}
                 </p>
                 {dataSource === 'sample' && (
-                  <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50">
+                  <Badge
+                    variant="outline"
+                    className="border-amber-200 bg-amber-50 text-amber-600"
+                  >
                     Sample Data
                   </Badge>
                 )}
                 {dataSource === 'database' && (
-                  <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                  <Badge
+                    variant="outline"
+                    className="border-green-200 bg-green-50 text-green-600"
+                  >
                     Live Data
                   </Badge>
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 onClick={() => setIsTemplateManagerOpen(true)}
                 className="hidden sm:flex"
               >
-                <MessageSquare className="h-4 w-4 mr-2" />
+                <MessageSquare className="mr-2 h-4 w-4" />
                 Templates
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={testGoogleAPI}
                 disabled={loading}
                 className="hidden sm:flex"
               >
-                <Star className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <Star
+                  className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 Test Google API
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={syncFromGBP}
                 disabled={loading}
                 className="hidden sm:flex"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 Sync from Google
               </Button>
-              
+
               <Button
                 onClick={() => fetchReviews()}
                 disabled={loading}
                 className="bg-primary hover:bg-primary/90"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 Refresh
               </Button>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-5">
             <div className="card p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="caption text-muted-foreground mb-1">Total Reviews</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+                  <p className="caption mb-1 text-muted-foreground">
+                    Total Reviews
+                  </p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {stats.total}
+                  </p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <MessageSquare className="h-5 w-5" />
                 </div>
               </div>
@@ -417,7 +462,9 @@ export default function ReviewsPage() {
             <div className="card p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="caption text-muted-foreground mb-1">Average Rating</p>
+                  <p className="caption mb-1 text-muted-foreground">
+                    Average Rating
+                  </p>
                   <div className="flex items-center gap-2">
                     <p className="text-2xl font-bold text-foreground">
                       {stats.averageRating.toFixed(1)}
@@ -425,7 +472,7 @@ export default function ReviewsPage() {
                     {renderStars(Math.round(stats.averageRating))}
                   </div>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-yellow-100 text-yellow-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100 text-yellow-600">
                   <Star className="h-5 w-5" />
                 </div>
               </div>
@@ -434,10 +481,14 @@ export default function ReviewsPage() {
             <div className="card p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="caption text-muted-foreground mb-1">Response Rate</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.responseRate}%</p>
+                  <p className="caption mb-1 text-muted-foreground">
+                    Response Rate
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.responseRate}%
+                  </p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
                   <Reply className="h-5 w-5" />
                 </div>
               </div>
@@ -446,10 +497,12 @@ export default function ReviewsPage() {
             <div className="card p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="caption text-muted-foreground mb-1">Positive</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.sentimentBreakdown.positive}</p>
+                  <p className="caption mb-1 text-muted-foreground">Positive</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.sentimentBreakdown.positive}
+                  </p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
                   <ThumbsUp className="h-5 w-5" />
                 </div>
               </div>
@@ -458,10 +511,12 @@ export default function ReviewsPage() {
             <div className="card p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="caption text-muted-foreground mb-1">Negative</p>
-                  <p className="text-2xl font-bold text-red-600">{stats.sentimentBreakdown.negative}</p>
+                  <p className="caption mb-1 text-muted-foreground">Negative</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {stats.sentimentBreakdown.negative}
+                  </p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-red-100 text-red-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 text-red-600">
                   <ThumbsDown className="h-5 w-5" />
                 </div>
               </div>
@@ -469,21 +524,21 @@ export default function ReviewsPage() {
           </div>
 
           {/* Filters and Search */}
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search reviews..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="form-input pl-10 pr-4"
               />
             </div>
-            
+
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={e => setStatusFilter(e.target.value)}
               className="form-input w-full lg:w-auto"
             >
               <option value="ALL">All Status</option>
@@ -495,7 +550,7 @@ export default function ReviewsPage() {
 
             <select
               value={ratingFilter}
-              onChange={(e) => setRatingFilter(e.target.value)}
+              onChange={e => setRatingFilter(e.target.value)}
               className="form-input w-full lg:w-auto"
             >
               <option value="ALL">All Ratings</option>
@@ -508,7 +563,7 @@ export default function ReviewsPage() {
 
             <select
               value={sentimentFilter}
-              onChange={(e) => setSentimentFilter(e.target.value)}
+              onChange={e => setSentimentFilter(e.target.value)}
               className="form-input w-full lg:w-auto"
             >
               <option value="ALL">All Sentiment</option>
@@ -519,7 +574,7 @@ export default function ReviewsPage() {
 
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={e => setSortBy(e.target.value)}
               className="form-input w-full lg:w-auto"
             >
               <option value="newest">Newest First</option>
@@ -532,13 +587,15 @@ export default function ReviewsPage() {
 
         {/* Error Display */}
         {error && (
-          <Card className="border-red-200 bg-red-50 mb-6">
+          <Card className="mb-6 border-red-200 bg-red-50">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <AlertCircle className="h-6 w-6 text-red-600 flex-shrink-0" />
+                <AlertCircle className="h-6 w-6 flex-shrink-0 text-red-600" />
                 <div>
-                  <h3 className="text-lg font-semibold text-red-800">Error Loading Reviews</h3>
-                  <p className="text-sm text-red-700 mt-2">{error}</p>
+                  <h3 className="text-lg font-semibold text-red-800">
+                    Error Loading Reviews
+                  </h3>
+                  <p className="mt-2 text-sm text-red-700">{error}</p>
                 </div>
               </div>
             </CardContent>
@@ -549,7 +606,7 @@ export default function ReviewsPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="card h-32 bg-muted loading-pulse"></div>
+              <div key={i} className="card loading-pulse h-32 bg-muted"></div>
             ))}
           </div>
         ) : (
@@ -558,50 +615,63 @@ export default function ReviewsPage() {
             {filteredAndSortedReviews.length === 0 ? (
               <div className="card-elevated">
                 <div className="card-content p-12 text-center">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-xl bg-muted">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-muted">
                     <MessageSquare className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="heading-3 text-foreground mb-2">
-                    {searchTerm || statusFilter !== 'ALL' || ratingFilter !== 'ALL' || sentimentFilter !== 'ALL'
+                  <h3 className="heading-3 mb-2 text-foreground">
+                    {searchTerm ||
+                    statusFilter !== 'ALL' ||
+                    ratingFilter !== 'ALL' ||
+                    sentimentFilter !== 'ALL'
                       ? 'No Reviews Found'
-                      : 'No Reviews Yet'
-                    }
+                      : 'No Reviews Yet'}
                   </h3>
-                  <p className="body text-muted-foreground mb-6">
-                    {searchTerm || statusFilter !== 'ALL' || ratingFilter !== 'ALL' || sentimentFilter !== 'ALL'
+                  <p className="body mb-6 text-muted-foreground">
+                    {searchTerm ||
+                    statusFilter !== 'ALL' ||
+                    ratingFilter !== 'ALL' ||
+                    sentimentFilter !== 'ALL'
                       ? 'Try adjusting your search or filter criteria.'
-                      : 'Reviews from customers will appear here once your business starts receiving them.'
-                    }
+                      : 'Reviews from customers will appear here once your business starts receiving them.'}
                   </p>
-                  
-                  {!searchTerm && statusFilter === 'ALL' && ratingFilter === 'ALL' && sentimentFilter === 'ALL' && (
-                    <div className="space-y-3">
-                      <Button
-                        onClick={() => createTestReviews()}
-                        disabled={loading}
-                        className="bg-primary hover:bg-primary/90"
-                      >
-                        <Star className="h-4 w-4 mr-2" />
-                        Create Test Reviews
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        This will create sample reviews in your database for testing
-                      </p>
-                    </div>
-                  )}
+
+                  {!searchTerm &&
+                    statusFilter === 'ALL' &&
+                    ratingFilter === 'ALL' &&
+                    sentimentFilter === 'ALL' && (
+                      <div className="space-y-3">
+                        <Button
+                          onClick={() => createTestReviews()}
+                          disabled={loading}
+                          className="bg-primary hover:bg-primary/90"
+                        >
+                          <Star className="mr-2 h-4 w-4" />
+                          Create Test Reviews
+                        </Button>
+                        <p className="text-xs text-muted-foreground">
+                          This will create sample reviews in your database for
+                          testing
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredAndSortedReviews.map((review) => {
-                  const sentimentDisplay = getSentimentDisplay(review.sentiment);
+                {filteredAndSortedReviews.map(review => {
+                  const sentimentDisplay = getSentimentDisplay(
+                    review.sentiment
+                  );
                   const SentimentIcon = sentimentDisplay.icon;
-                  
+
                   return (
-                    <div key={review.id} className="card group hover:shadow-large transition-all duration-300">
+                    <div
+                      key={review.id}
+                      className="card group transition-all duration-300 hover:shadow-large"
+                    >
                       <div className="card-content p-6">
                         {/* Review Header */}
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="mb-4 flex items-start justify-between">
                           <div className="flex items-start gap-4">
                             {/* Reviewer Avatar */}
                             <div className="flex-shrink-0">
@@ -609,38 +679,53 @@ export default function ReviewsPage() {
                                 <img
                                   src={review.reviewerPhotoUrl}
                                   alt={review.reviewerName}
-                                  className="w-12 h-12 rounded-full object-cover"
+                                  className="h-12 w-12 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                                   <User className="h-6 w-6 text-muted-foreground" />
                                 </div>
                               )}
                             </div>
-                            
+
                             {/* Review Info */}
                             <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-semibold text-foreground">{review.reviewerName}</h3>
+                              <div className="mb-2 flex items-center gap-3">
+                                <h3 className="font-semibold text-foreground">
+                                  {review.reviewerName}
+                                </h3>
                                 {review.isVerified && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    <CheckCircle className="mr-1 h-3 w-3" />
                                     Verified
                                   </Badge>
                                 )}
-                                <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${sentimentDisplay.bg}`}>
-                                  <SentimentIcon className={`h-3 w-3 ${sentimentDisplay.color}`} />
-                                  <span className={`text-xs font-medium ${sentimentDisplay.color}`}>
+                                <div
+                                  className={`flex items-center gap-1 rounded-full px-2 py-1 ${sentimentDisplay.bg}`}
+                                >
+                                  <SentimentIcon
+                                    className={`h-3 w-3 ${sentimentDisplay.color}`}
+                                  />
+                                  <span
+                                    className={`text-xs font-medium ${sentimentDisplay.color}`}
+                                  >
                                     {sentimentDisplay.label}
                                   </span>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 {renderStars(review.rating)}
                                 <span>{formatTimeAgo(review.publishedAt)}</span>
-                                <Badge 
-                                  variant={review.status === 'NEW' ? 'default' : 'secondary'}
+                                <Badge
+                                  variant={
+                                    review.status === 'NEW'
+                                      ? 'default'
+                                      : 'secondary'
+                                  }
                                   className="text-xs"
                                 >
                                   {review.status}
@@ -648,7 +733,7 @@ export default function ReviewsPage() {
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Action Buttons */}
                           <div className="flex items-center gap-1">
                             {!review.response && (
@@ -659,29 +744,33 @@ export default function ReviewsPage() {
                                   setSelectedReview(review);
                                   setIsResponseModalOpen(true);
                                 }}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="opacity-0 transition-opacity group-hover:opacity-100"
                               >
-                                <Reply className="h-3 w-3 mr-1" />
+                                <Reply className="mr-1 h-3 w-3" />
                                 Reply
                               </Button>
                             )}
-                            
+
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateReviewStatus(review.id, 'FLAGGED')}
+                              onClick={() =>
+                                updateReviewStatus(review.id, 'FLAGGED')
+                              }
                               disabled={actionLoading === review.id}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="opacity-0 transition-opacity group-hover:opacity-100"
                             >
                               <Flag className="h-3 w-3" />
                             </Button>
-                            
+
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => updateReviewStatus(review.id, 'ARCHIVED')}
+                              onClick={() =>
+                                updateReviewStatus(review.id, 'ARCHIVED')
+                              }
                               disabled={actionLoading === review.id}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="opacity-0 transition-opacity group-hover:opacity-100"
                             >
                               <Archive className="h-3 w-3" />
                             </Button>
@@ -691,21 +780,28 @@ export default function ReviewsPage() {
                         {/* Review Content */}
                         {review.content && (
                           <div className="mb-4">
-                            <p className="text-foreground leading-relaxed">{review.content}</p>
+                            <p className="leading-relaxed text-foreground">
+                              {review.content}
+                            </p>
                           </div>
                         )}
 
                         {/* Response */}
                         {review.response && (
-                          <div className="mt-4 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                            <div className="flex items-center gap-2 mb-2">
+                          <div className="mt-4 rounded-lg border-l-4 border-primary bg-muted/50 p-4">
+                            <div className="mb-2 flex items-center gap-2">
                               <Reply className="h-4 w-4 text-primary" />
-                              <span className="text-sm font-medium text-foreground">Response</span>
+                              <span className="text-sm font-medium text-foreground">
+                                Response
+                              </span>
                               <span className="text-xs text-muted-foreground">
-                                by {review.response.creator.name} • {formatTimeAgo(review.response.publishedAt)}
+                                by {review.response.creator.name} •{' '}
+                                {formatTimeAgo(review.response.publishedAt)}
                               </span>
                             </div>
-                            <p className="text-sm text-foreground">{review.response.content}</p>
+                            <p className="text-sm text-foreground">
+                              {review.response.content}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -746,4 +842,4 @@ export default function ReviewsPage() {
       </div>
     </div>
   );
-} 
+}

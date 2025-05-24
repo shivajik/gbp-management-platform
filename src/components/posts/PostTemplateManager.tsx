@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  X, 
+import {
+  X,
   Plus,
   Search,
   Trash2,
@@ -18,7 +18,7 @@ import {
   Tag,
   Clock,
   Save,
-  MoreHorizontal
+  MoreHorizontal,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -55,14 +55,16 @@ export default function PostTemplateManager({
   isOpen,
   onClose,
   businessProfileId,
-  onUseTemplate
+  onUseTemplate,
 }: PostTemplateManagerProps) {
   const [templates, setTemplates] = useState<PostTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<PostTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<PostTemplate | null>(
+    null
+  );
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // New template form state
@@ -73,17 +75,19 @@ export default function PostTemplateManager({
     postType: 'UPDATE' as 'UPDATE' | 'EVENT' | 'OFFER',
     callToAction: {} as any,
     tags: [] as string[],
-    tagInput: ''
+    tagInput: '',
   });
 
   // Fetch templates
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      
-      const response = await fetch(`/api/post-templates?businessProfileId=${businessProfileId}`);
+
+      const response = await fetch(
+        `/api/post-templates?businessProfileId=${businessProfileId}`
+      );
       const result = await response.json();
-      
+
       if (result.success) {
         setTemplates(result.templates || []);
       } else {
@@ -106,7 +110,7 @@ export default function PostTemplateManager({
 
     try {
       setActionLoading('save');
-      
+
       const templateData = {
         name: newTemplate.name,
         description: newTemplate.description,
@@ -114,10 +118,12 @@ export default function PostTemplateManager({
         postType: newTemplate.postType,
         callToAction: newTemplate.callToAction,
         tags: newTemplate.tags,
-        businessProfileId
+        businessProfileId,
       };
 
-      const url = editingTemplate ? `/api/post-templates/${editingTemplate.id}` : '/api/post-templates';
+      const url = editingTemplate
+        ? `/api/post-templates/${editingTemplate.id}`
+        : '/api/post-templates';
       const method = editingTemplate ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -127,9 +133,13 @@ export default function PostTemplateManager({
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        toast.success(editingTemplate ? 'Template updated successfully' : 'Template saved successfully');
+        toast.success(
+          editingTemplate
+            ? 'Template updated successfully'
+            : 'Template saved successfully'
+        );
         fetchTemplates();
         resetForm();
         setShowCreateModal(false);
@@ -157,13 +167,13 @@ export default function PostTemplateManager({
 
     try {
       setActionLoading(templateId);
-      
+
       const response = await fetch(`/api/post-templates/${templateId}`, {
         method: 'DELETE',
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setTemplates(prev => prev.filter(t => t.id !== templateId));
         toast.success('Template deleted successfully');
@@ -187,16 +197,21 @@ export default function PostTemplateManager({
     }
 
     try {
-      const response = await fetch(`/api/post-templates/${templateId}/favorite`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `/api/post-templates/${templateId}/favorite`,
+        {
+          method: 'POST',
+        }
+      );
 
       const result = await response.json();
-      
+
       if (result.success) {
-        setTemplates(prev => prev.map(t => 
-          t.id === templateId ? { ...t, isFavorite: !t.isFavorite } : t
-        ));
+        setTemplates(prev =>
+          prev.map(t =>
+            t.id === templateId ? { ...t, isFavorite: !t.isFavorite } : t
+          )
+        );
       } else {
         toast.error(result.error || 'Failed to update favorite');
       }
@@ -215,7 +230,7 @@ export default function PostTemplateManager({
       postType: 'UPDATE',
       callToAction: {},
       tags: [],
-      tagInput: ''
+      tagInput: '',
     });
   };
 
@@ -226,7 +241,7 @@ export default function PostTemplateManager({
       setNewTemplate(prev => ({
         ...prev,
         tags: [...prev.tags, tag],
-        tagInput: ''
+        tagInput: '',
       }));
     }
   };
@@ -235,17 +250,21 @@ export default function PostTemplateManager({
   const removeTag = (tagToRemove: string) => {
     setNewTemplate(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter(tag => tag !== tagToRemove),
     }));
   };
 
   // Filter templates
   const filteredTemplates = templates.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesType = selectedType === 'ALL' || template.postType === selectedType;
-    
+    const matchesSearch =
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.tags.some(tag =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    const matchesType =
+      selectedType === 'ALL' || template.postType === selectedType;
+
     return matchesSearch && matchesType;
   });
 
@@ -253,7 +272,9 @@ export default function PostTemplateManager({
   const loadForEdit = (template: PostTemplate) => {
     // Don't allow editing sample templates
     if (template.id.startsWith('sample-')) {
-      toast.error('Cannot edit sample templates. Use the template to create a new post instead.');
+      toast.error(
+        'Cannot edit sample templates. Use the template to create a new post instead.'
+      );
       return;
     }
 
@@ -264,7 +285,7 @@ export default function PostTemplateManager({
       postType: template.postType,
       callToAction: template.callToAction || {},
       tags: template.tags,
-      tagInput: ''
+      tagInput: '',
     });
     setEditingTemplate(template);
     setShowCreateModal(true);
@@ -279,26 +300,28 @@ export default function PostTemplateManager({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-background rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-xl bg-background shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between border-b border-border p-6">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Post Templates</h2>
+            <h2 className="text-xl font-semibold text-foreground">
+              Post Templates
+            </h2>
             <p className="text-sm text-muted-foreground">
               Save and reuse post templates to streamline your content creation
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <Button
               onClick={() => setShowCreateModal(true)}
               className="bg-primary hover:bg-primary/90"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               New Template
             </Button>
-            
+
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
@@ -307,21 +330,21 @@ export default function PostTemplateManager({
 
         <div className="p-6">
           {/* Search and Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search templates..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="form-input pl-10 pr-4"
               />
             </div>
-            
+
             <select
               value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
+              onChange={e => setSelectedType(e.target.value)}
               className="form-input w-full sm:w-auto"
             >
               <option value="ALL">All Types</option>
@@ -332,56 +355,65 @@ export default function PostTemplateManager({
           </div>
 
           {/* Templates Grid */}
-          <div className="overflow-y-auto max-h-[60vh]">
+          <div className="max-h-[60vh] overflow-y-auto">
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="card h-48 bg-muted loading-pulse"></div>
+                  <div
+                    key={i}
+                    className="card loading-pulse h-48 bg-muted"
+                  ></div>
                 ))}
               </div>
             ) : filteredTemplates.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {searchTerm || selectedType !== 'ALL' ? 'No Templates Found' : 'No Templates Yet'}
+              <div className="py-12 text-center">
+                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-semibold text-foreground">
+                  {searchTerm || selectedType !== 'ALL'
+                    ? 'No Templates Found'
+                    : 'No Templates Yet'}
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchTerm || selectedType !== 'ALL' 
+                <p className="mb-4 text-muted-foreground">
+                  {searchTerm || selectedType !== 'ALL'
                     ? 'Try adjusting your search or filter criteria.'
-                    : 'Create your first template to get started.'
-                  }
+                    : 'Create your first template to get started.'}
                 </p>
                 {!searchTerm && selectedType === 'ALL' && (
                   <Button onClick={() => setShowCreateModal(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="mr-2 h-4 w-4" />
                     Create Your First Template
                   </Button>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredTemplates.map((template) => (
-                  <div key={template.id} className="card group hover:shadow-large transition-all duration-300">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredTemplates.map(template => (
+                  <div
+                    key={template.id}
+                    className="card group transition-all duration-300 hover:shadow-large"
+                  >
                     <div className="card-header">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-foreground">{template.name}</h3>
+                          <div className="mb-1 flex items-center gap-2">
+                            <h3 className="font-semibold text-foreground">
+                              {template.name}
+                            </h3>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => toggleFavorite(template.id)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="opacity-0 transition-opacity group-hover:opacity-100"
                             >
                               {template.isFavorite ? (
-                                <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                                <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
                               ) : (
                                 <StarOff className="h-3 w-3 text-gray-400" />
                               )}
                             </Button>
                           </div>
-                          
-                          <div className="flex items-center gap-2 mb-2">
+
+                          <div className="mb-2 flex items-center gap-2">
                             <Badge variant="outline" className="text-xs">
                               {template.postType.toLowerCase()}
                             </Badge>
@@ -392,23 +424,23 @@ export default function PostTemplateManager({
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => loadForEdit(template)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="opacity-0 transition-opacity group-hover:opacity-100"
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
-                          
+
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteTemplate(template.id)}
                             disabled={actionLoading === template.id}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700"
+                            className="text-red-600 opacity-0 transition-opacity hover:text-red-700 group-hover:opacity-100"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -418,18 +450,24 @@ export default function PostTemplateManager({
 
                     <div className="card-content">
                       {template.description && (
-                        <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
+                        <p className="mb-3 text-sm text-muted-foreground">
+                          {template.description}
+                        </p>
                       )}
-                      
-                      <p className="body-small text-foreground line-clamp-3 mb-4">
+
+                      <p className="body-small mb-4 line-clamp-3 text-foreground">
                         {template.content}
                       </p>
 
                       {/* Tags */}
                       {template.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-4">
-                          {template.tags.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
+                        <div className="mb-4 flex flex-wrap gap-1">
+                          {template.tags.slice(0, 3).map(tag => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {tag}
                             </Badge>
                           ))}
@@ -442,7 +480,10 @@ export default function PostTemplateManager({
                       )}
 
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Created {new Date(template.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          Created{' '}
+                          {new Date(template.createdAt).toLocaleDateString()}
+                        </span>
                         <span>By {template.creator.name}</span>
                       </div>
                     </div>
@@ -453,7 +494,7 @@ export default function PostTemplateManager({
                         className="w-full"
                         size="sm"
                       >
-                        <Copy className="h-3 w-3 mr-2" />
+                        <Copy className="mr-2 h-3 w-3" />
                         Use Template
                       </Button>
                     </div>
@@ -467,15 +508,15 @@ export default function PostTemplateManager({
 
       {/* Create/Edit Template Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60">
-          <div className="bg-background rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="z-60 fixed inset-0 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-xl bg-background shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border p-6">
               <h3 className="text-lg font-semibold text-foreground">
                 {editingTemplate ? 'Edit Template' : 'Create New Template'}
               </h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setShowCreateModal(false);
                   setEditingTemplate(null);
@@ -486,17 +527,22 @@ export default function PostTemplateManager({
               </Button>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <div className="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
               <div className="space-y-6">
                 {/* Template Name */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Template Name *
                   </label>
                   <input
                     type="text"
                     value={newTemplate.name}
-                    onChange={(e) => setNewTemplate(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={e =>
+                      setNewTemplate(prev => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     placeholder="Enter template name"
                     className="form-input"
                   />
@@ -504,13 +550,18 @@ export default function PostTemplateManager({
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Description
                   </label>
                   <input
                     type="text"
                     value={newTemplate.description}
-                    onChange={(e) => setNewTemplate(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={e =>
+                      setNewTemplate(prev => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     placeholder="Optional description"
                     className="form-input"
                   />
@@ -518,12 +569,17 @@ export default function PostTemplateManager({
 
                 {/* Post Type */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Post Type
                   </label>
                   <select
                     value={newTemplate.postType}
-                    onChange={(e) => setNewTemplate(prev => ({ ...prev, postType: e.target.value as any }))}
+                    onChange={e =>
+                      setNewTemplate(prev => ({
+                        ...prev,
+                        postType: e.target.value as any,
+                      }))
+                    }
                     className="form-input"
                   >
                     <option value="UPDATE">Update</option>
@@ -534,33 +590,45 @@ export default function PostTemplateManager({
 
                 {/* Content */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Content *
                   </label>
                   <textarea
                     value={newTemplate.content}
-                    onChange={(e) => setNewTemplate(prev => ({ ...prev, content: e.target.value }))}
+                    onChange={e =>
+                      setNewTemplate(prev => ({
+                        ...prev,
+                        content: e.target.value,
+                      }))
+                    }
                     placeholder="Write your template content here..."
                     className="form-input min-h-[120px] resize-none"
                     maxLength={1500}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {newTemplate.content.length}/1500 characters
                   </p>
                 </div>
 
                 {/* Tags */}
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-foreground">
                     Tags
                   </label>
-                  
-                  <div className="flex gap-2 mb-2">
+
+                  <div className="mb-2 flex gap-2">
                     <input
                       type="text"
                       value={newTemplate.tagInput}
-                      onChange={(e) => setNewTemplate(prev => ({ ...prev, tagInput: e.target.value }))}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      onChange={e =>
+                        setNewTemplate(prev => ({
+                          ...prev,
+                          tagInput: e.target.value,
+                        }))
+                      }
+                      onKeyPress={e =>
+                        e.key === 'Enter' && (e.preventDefault(), addTag())
+                      }
                       placeholder="Add tag and press Enter"
                       className="form-input flex-1"
                     />
@@ -571,8 +639,12 @@ export default function PostTemplateManager({
 
                   {newTemplate.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
-                      {newTemplate.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                      {newTemplate.tags.map(tag => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                           <button
                             type="button"
@@ -589,9 +661,9 @@ export default function PostTemplateManager({
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
-              <Button 
-                variant="outline" 
+            <div className="flex items-center justify-end gap-3 border-t border-border p-6">
+              <Button
+                variant="outline"
                 onClick={() => {
                   setShowCreateModal(false);
                   setEditingTemplate(null);
@@ -601,13 +673,13 @@ export default function PostTemplateManager({
               >
                 Cancel
               </Button>
-              
+
               <Button
                 onClick={saveTemplate}
                 disabled={actionLoading === 'save'}
                 className="bg-primary hover:bg-primary/90"
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 {editingTemplate ? 'Update Template' : 'Save Template'}
               </Button>
             </div>
@@ -616,4 +688,4 @@ export default function PostTemplateManager({
       )}
     </div>
   );
-} 
+}

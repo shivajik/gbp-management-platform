@@ -48,6 +48,16 @@
     ".next",
     "out",
     "build",
-    "prisma/seed.ts"
+    "prisma/seed.ts",
+    "backup-*/**/*",
+    "backup-*",
+    "*.sql",
+    "verify-*.js",
+    "test-*.js",
+    "debug-*.js",
+    "check-*.js",
+    "restore-*.js",
+    "create-*.js",
+    "setup-*.js"
   ]
-} 
+}

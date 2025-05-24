@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,7 +18,10 @@ export async function POST(
     const reviewId = params.id;
 
     if (!reviewId) {
-      return NextResponse.json({ error: 'Review ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Review ID is required' },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
@@ -45,7 +48,10 @@ export async function POST(
     });
 
     if (!user?.organizationId) {
-      return NextResponse.json({ error: 'User not associated with organization' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'User not associated with organization' },
+        { status: 403 }
+      );
     }
 
     // Verify business profile belongs to user's organization
@@ -57,7 +63,10 @@ export async function POST(
     });
 
     if (!businessProfile) {
-      return NextResponse.json({ error: 'Business profile not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Business profile not found' },
+        { status: 404 }
+      );
     }
 
     try {
@@ -95,8 +104,11 @@ export async function POST(
             isMockData: true,
           });
         }
-        
-        return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+
+        return NextResponse.json(
+          { error: 'Review not found' },
+          { status: 404 }
+        );
       }
 
       // Check if review already has a response
@@ -152,11 +164,13 @@ export async function POST(
         success: true,
         response,
       });
-
     } catch (dbError) {
       // If Review/ReviewResponse models don't exist yet, return mock success for sample reviews
-      console.warn('Review/Response models not available, returning mock response:', dbError);
-      
+      console.warn(
+        'Review/Response models not available, returning mock response:',
+        dbError
+      );
+
       if (reviewId.startsWith('sample-')) {
         const mockResponse = {
           id: `response-${Date.now()}`,
@@ -181,7 +195,6 @@ export async function POST(
 
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
-
   } catch (error) {
     console.error('Error submitting review response:', error);
     return NextResponse.json(
@@ -189,4 +202,4 @@ export async function POST(
       { status: 500 }
     );
   }
-} 
+}

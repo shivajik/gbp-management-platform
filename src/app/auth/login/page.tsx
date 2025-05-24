@@ -10,17 +10,17 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Eye, 
-  EyeOff, 
-  Zap, 
-  Building2, 
-  BarChart3, 
-  Users, 
+import {
+  Eye,
+  EyeOff,
+  Zap,
+  Building2,
+  BarChart3,
+  Users,
   Shield,
   Chrome,
   Star,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -65,7 +65,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-    
+
     try {
       const result = await signIn('credentials', {
         email: data.email,
@@ -99,82 +99,97 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen">
       {/* Left Side - Info Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 relative overflow-hidden">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 lg:flex lg:w-1/2">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-20">
-          <div className="w-full h-full bg-repeat" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+          <div
+            className="h-full w-full bg-repeat"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          ></div>
         </div>
-        
+
         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-12">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm">
+          <div className="mb-12 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
               <Zap className="h-6 w-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">GBP Manager</h1>
-              <p className="text-primary-200 text-sm">Professional Edition</p>
+              <p className="text-sm text-primary-200">Professional Edition</p>
             </div>
           </div>
 
           {/* Main Content */}
           <div className="mb-12">
-            <h2 className="text-4xl font-bold mb-6 leading-tight">
+            <h2 className="mb-6 text-4xl font-bold leading-tight">
               Welcome back to your Business Command Center
             </h2>
-            <p className="text-xl text-primary-100 leading-relaxed mb-8">
-              Access powerful tools to manage your Google Business Profiles, 
-              track performance, and grow your online presence across multiple locations.
+            <p className="mb-8 text-xl leading-relaxed text-primary-100">
+              Access powerful tools to manage your Google Business Profiles,
+              track performance, and grow your online presence across multiple
+              locations.
             </p>
           </div>
 
           {/* Features */}
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <Building2 className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Multi-Location Management</h3>
-                <p className="text-primary-200">Control all your business listings from one dashboard</p>
+                <h3 className="text-lg font-semibold">
+                  Multi-Location Management
+                </h3>
+                <p className="text-primary-200">
+                  Control all your business listings from one dashboard
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <BarChart3 className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Advanced Analytics</h3>
-                <p className="text-primary-200">Track performance with real-time insights</p>
+                <h3 className="text-lg font-semibold">Advanced Analytics</h3>
+                <p className="text-primary-200">
+                  Track performance with real-time insights
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
                 <Users className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Team Collaboration</h3>
-                <p className="text-primary-200">Work together with role-based access</p>
+                <h3 className="text-lg font-semibold">Team Collaboration</h3>
+                <p className="text-primary-200">
+                  Work together with role-based access
+                </p>
               </div>
             </div>
           </div>
 
           {/* Testimonial */}
-          <div className="mt-12 p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-            <div className="flex items-center gap-1 mb-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} className="h-4 w-4 text-warning-400 fill-current" />
+          <div className="mt-12 rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-sm">
+            <div className="mb-3 flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map(star => (
+                <Star
+                  key={star}
+                  className="h-4 w-4 fill-current text-warning-400"
+                />
               ))}
             </div>
-            <p className="text-primary-100 mb-3">
-              &quot;GBP Manager transformed how we handle our 50+ locations. The analytics 
-              alone saved us hours of manual work every week.&quot;
+            <p className="mb-3 text-primary-100">
+              &quot;GBP Manager transformed how we handle our 50+ locations. The
+              analytics alone saved us hours of manual work every week.&quot;
             </p>
             <p className="text-sm text-primary-200">
               — Sarah Johnson, Marketing Director
@@ -184,19 +199,23 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-secondary-50/30">
+      <div className="flex flex-1 items-center justify-center bg-secondary-50/30 p-8">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-500 text-white">
+          <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
               <Zap className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold text-foreground">GBP Manager</span>
+            <span className="text-xl font-bold text-foreground">
+              GBP Manager
+            </span>
           </div>
 
           {/* Form Header */}
-          <div className="text-center mb-8">
-            <h1 className="heading-2 text-foreground mb-2">Sign in to your account</h1>
+          <div className="mb-8 text-center">
+            <h1 className="heading-2 mb-2 text-foreground">
+              Sign in to your account
+            </h1>
             <p className="body text-muted-foreground">
               Enter your credentials to access your dashboard
             </p>
@@ -208,12 +227,12 @@ export default function LoginPage() {
               onClick={handleGoogleSignIn}
               disabled={isGoogleLoading}
               variant="outline"
-              className="w-full h-12 text-base"
+              className="h-12 w-full text-base"
             >
               {isGoogleLoading ? (
-                <div className="loading-spinner w-5 h-5 mr-3"></div>
+                <div className="loading-spinner mr-3 h-5 w-5"></div>
               ) : (
-                <Chrome className="h-5 w-5 mr-3" />
+                <Chrome className="mr-3 h-5 w-5" />
               )}
               Continue with Google
             </Button>
@@ -225,7 +244,9 @@ export default function LoginPage() {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-secondary-50/30 text-muted-foreground">Or continue with email</span>
+              <span className="bg-secondary-50/30 px-4 text-muted-foreground">
+                Or continue with email
+              </span>
             </div>
           </div>
 
@@ -233,7 +254,9 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Email Field */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="form-label">Email address</Label>
+              <Label htmlFor="email" className="form-label">
+                Email address
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -249,7 +272,9 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="form-label">Password</Label>
+              <Label htmlFor="password" className="form-label">
+                Password
+              </Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -261,7 +286,7 @@ export default function LoginPage() {
                 />
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -283,16 +308,19 @@ export default function LoginPage() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-border rounded"
+                  className="h-4 w-4 rounded border-border text-primary-500 focus:ring-primary-500"
                 />
-                <Label htmlFor="remember-me" className="text-sm text-muted-foreground">
+                <Label
+                  htmlFor="remember-me"
+                  className="text-sm text-muted-foreground"
+                >
                   Remember me
                 </Label>
               </div>
 
               <Link
                 href="/auth/forgot-password"
-                className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                className="text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
               >
                 Forgot password?
               </Link>
@@ -302,11 +330,11 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 text-base"
+              className="h-12 w-full text-base"
             >
               {isLoading ? (
                 <>
-                  <div className="loading-spinner w-5 h-5 mr-3"></div>
+                  <div className="loading-spinner mr-3 h-5 w-5"></div>
                   Signing in...
                 </>
               ) : (
@@ -324,7 +352,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{' '}
               <Link
                 href="/auth/register"
-                className="font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                className="font-medium text-primary-600 transition-colors hover:text-primary-700"
               >
                 Create your account
               </Link>
@@ -334,10 +362,12 @@ export default function LoginPage() {
           {/* Security Notice */}
           <div className="mt-8 flex items-center justify-center gap-2 text-muted-foreground">
             <Shield className="h-4 w-4" />
-            <span className="caption">Your data is protected with enterprise-grade security</span>
+            <span className="caption">
+              Your data is protected with enterprise-grade security
+            </span>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}
