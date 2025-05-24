@@ -8,21 +8,13 @@
     }
   },
   "env": {
-    "SKIP_ENV_VALIDATION": "1",
-    "DATABASE_URL": "postgresql://dummy:dummy@localhost:5432/dummy",
-    "NEXTAUTH_URL": "@vercel_url",
-    "NEXTAUTH_SECRET": "dummy-secret-for-build",
-    "APP_URL": "@vercel_url",
-    "GOOGLE_CLIENT_ID": "dummy-client-id",
-    "GOOGLE_CLIENT_SECRET": "dummy-client-secret"
+    "SKIP_ENV_VALIDATION": "1"
   },
   "build": {
     "env": {
       "SKIP_ENV_VALIDATION": "1",
       "DATABASE_URL": "postgresql://dummy:dummy@localhost:5432/dummy",
-      "NEXTAUTH_URL": "@vercel_url",
-      "NEXTAUTH_SECRET": "dummy-secret-for-build",
-      "APP_URL": "@vercel_url",
+      "NEXTAUTH_SECRET": "dummy-secret-for-build-only",
       "GOOGLE_CLIENT_ID": "dummy-client-id",
       "GOOGLE_CLIENT_SECRET": "dummy-client-secret"
     }
@@ -33,7 +25,7 @@
       "headers": [
         {
           "key": "X-Deployment-Version",
-          "value": "v1.2-build-fixes"
+          "value": "v1.2-production-ready"
         }
       ]
     }
