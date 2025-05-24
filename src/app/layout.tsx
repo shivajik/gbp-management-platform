@@ -10,6 +10,37 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+// Safe URL creation helper
+function createSafeUrl(urlString?: string): URL {
+  try {
+    if (!urlString || urlString.trim() === '') {
+      return new URL('http://localhost:3000');
+    }
+    return new URL(urlString);
+  } catch {
+    return new URL('http://localhost:3000');
+  }
+}
+
+// Get the base URL for metadata
+const getBaseUrl = (): string => {
+  // In build time, use localhost as fallback
+  const appUrl = process.env.APP_URL;
+  const vercelUrl = process.env.VERCEL_URL;
+  
+  if (appUrl && appUrl.trim() !== '') {
+    return appUrl;
+  }
+  
+  if (vercelUrl && vercelUrl.trim() !== '') {
+    return `https://${vercelUrl}`;
+  }
+  
+  return 'http://localhost:3000';
+};
+
+const baseUrl = getBaseUrl();
+
 export const metadata: Metadata = {
   title: {
     default: 'GBP Management Platform',
@@ -33,11 +64,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.APP_URL || 'http://localhost:3000'),
+  metadataBase: createSafeUrl(baseUrl),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.APP_URL || 'http://localhost:3000',
+    url: baseUrl,
     siteName: 'GBP Management Platform',
     title: 'GBP Management Platform',
     description:

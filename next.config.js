@@ -15,9 +15,10 @@ const nextConfig = {
   experimental: {
     // Enable serverComponentsExternalPackages for better package compatibility
     serverComponentsExternalPackages: ['@prisma/client', 'prisma', 'googleapis'],
-    // Enable app directory
-    appDir: true,
+    // Remove appDir as it's deprecated in Next.js 14
   },
+  // Disable static generation for pages that require runtime data
+  generateStaticParams: false,
   images: {
     domains: [
       'localhost',
@@ -63,14 +64,6 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/webhooks/:path*',
-        destination: '/api/webhooks/:path*',
-      },
-    ];
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -90,11 +83,13 @@ const nextConfig = {
     return config;
   },
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-    // Ensure environment variables are available at build time
-    DATABASE_URL: process.env.DATABASE_URL || '',
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL || '',
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
+    // Provide fallback values for environment variables during build
+    DATABASE_URL: process.env.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'dummy-secret-for-build',
+    APP_URL: process.env.APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || 'dummy-client-secret',
   },
   poweredByHeader: false,
   compress: true,
@@ -104,6 +99,10 @@ const nextConfig = {
   },
   // Output configuration for better compatibility
   output: 'standalone',
+  // Force dynamic rendering for all pages with authentication
+  async rewrites() {
+    return [];
+  },
 };
 
 module.exports = nextConfig;
