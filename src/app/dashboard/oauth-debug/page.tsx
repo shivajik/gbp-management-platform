@@ -1,9 +1,5 @@
 'use client';
 
-// Force dynamic rendering - this page requires authentication and API calls
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 import { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';

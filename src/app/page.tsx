@@ -11,10 +11,6 @@ import {
   Building2,
 } from 'lucide-react';
 
-// Force dynamic rendering - this page may use authentication or dynamic content
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 /**
  * Home page component - Landing page for the GBP Management Platform
  * Features hero section, benefits, and call-to-action

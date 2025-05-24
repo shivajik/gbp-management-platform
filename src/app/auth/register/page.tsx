@@ -1,9 +1,5 @@
 'use client';
 
-// Force dynamic rendering - this page handles form submissions and API calls
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';

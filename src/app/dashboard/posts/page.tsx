@@ -1,9 +1,5 @@
 'use client';
 
-// Force dynamic rendering - this page requires authentication and API calls
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useBusiness } from '@/contexts/BusinessContext';
