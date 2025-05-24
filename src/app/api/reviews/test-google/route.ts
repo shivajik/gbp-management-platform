@@ -3,6 +3,10 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { gbpService } from '@/lib/google-business';
 
+// Force dynamic runtime
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // GET /api/reviews/test-google - Test Google Business Profile API connection
 export async function GET(request: NextRequest) {
   try {

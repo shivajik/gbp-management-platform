@@ -3,6 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { ReviewStatus, ReviewSentiment } from '@prisma/client';
+import { z } from 'zod';
+
+// Force dynamic runtime
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // Sample reviews data that will be returned when no reviews exist OR as fallback
 const sampleReviews = [

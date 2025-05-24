@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -31,7 +31,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginFormContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -98,6 +98,178 @@ export default function LoginPage() {
     }
   };
 
+  return (
+    <div className="w-full max-w-md">
+      {/* Mobile Logo */}
+      <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
+          <Zap className="h-5 w-5" />
+        </div>
+        <span className="text-xl font-bold text-foreground">
+          GBP Manager
+        </span>
+      </div>
+
+      {/* Form Header */}
+      <div className="mb-8 text-center">
+        <h1 className="heading-2 mb-2 text-foreground">
+          Sign in to your account
+        </h1>
+        <p className="body text-muted-foreground">
+          Enter your credentials to access your dashboard
+        </p>
+      </div>
+
+      {/* Google Sign In */}
+      <div className="mb-6">
+        <Button
+          onClick={handleGoogleSignIn}
+          disabled={isGoogleLoading}
+          variant="outline"
+          className="h-12 w-full text-base"
+        >
+          {isGoogleLoading ? (
+            <div className="loading-spinner mr-3 h-5 w-5"></div>
+          ) : (
+            <Chrome className="mr-3 h-5 w-5" />
+          )}
+          Continue with Google
+        </Button>
+      </div>
+
+      {/* Divider */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-secondary-50/30 px-4 text-muted-foreground">
+            Or continue with email
+          </span>
+        </div>
+      </div>
+
+      {/* Login Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Email Field */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="form-label">
+            Email address
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Enter your email"
+            className={`form-input ${errors.email ? 'border-error-500' : ''}`}
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="form-error">{errors.email.message}</p>
+          )}
+        </div>
+
+        {/* Password Field */}
+        <div className="space-y-2">
+          <Label htmlFor="password" className="form-label">
+            Password
+          </Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              className={`form-input pr-12 ${errors.password ? 'border-error-500' : ''}`}
+              {...register('password')}
+            />
+            <button
+              type="button"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="form-error">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Remember me and Forgot password */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 rounded border-border text-primary-500 focus:ring-primary-500"
+            />
+            <Label
+              htmlFor="remember-me"
+              className="text-sm text-muted-foreground"
+            >
+              Remember me
+            </Label>
+          </div>
+
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="h-12 w-full text-base"
+        >
+          {isLoading ? (
+            <>
+              <div className="loading-spinner mr-3 h-5 w-5"></div>
+              Signing in...
+            </>
+          ) : (
+            <>
+              Sign in
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </>
+          )}
+        </Button>
+      </form>
+
+      {/* Register Link */}
+      <div className="mt-8 text-center">
+        <p className="body-small text-muted-foreground">
+          Don&apos;t have an account?{' '}
+          <Link
+            href="/auth/register"
+            className="font-medium text-primary-600 transition-colors hover:text-primary-700"
+          >
+            Create your account
+          </Link>
+        </p>
+      </div>
+
+      {/* Security Notice */}
+      <div className="mt-8 flex items-center justify-center gap-2 text-muted-foreground">
+        <Shield className="h-4 w-4" />
+        <span className="caption">
+          Your data is protected with enterprise-grade security
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Info Panel */}
@@ -200,173 +372,20 @@ export default function LoginPage() {
 
       {/* Right Side - Login Form */}
       <div className="flex flex-1 items-center justify-center bg-secondary-50/30 p-8">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500 text-white">
-              <Zap className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold text-foreground">
-              GBP Manager
-            </span>
-          </div>
-
-          {/* Form Header */}
-          <div className="mb-8 text-center">
-            <h1 className="heading-2 mb-2 text-foreground">
-              Sign in to your account
-            </h1>
-            <p className="body text-muted-foreground">
-              Enter your credentials to access your dashboard
-            </p>
-          </div>
-
-          {/* Google Sign In */}
-          <div className="mb-6">
-            <Button
-              onClick={handleGoogleSignIn}
-              disabled={isGoogleLoading}
-              variant="outline"
-              className="h-12 w-full text-base"
-            >
-              {isGoogleLoading ? (
-                <div className="loading-spinner mr-3 h-5 w-5"></div>
-              ) : (
-                <Chrome className="mr-3 h-5 w-5" />
-              )}
-              Continue with Google
-            </Button>
-          </div>
-
-          {/* Divider */}
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-secondary-50/30 px-4 text-muted-foreground">
-                Or continue with email
-              </span>
-            </div>
-          </div>
-
-          {/* Login Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="form-label">
-                Email address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="Enter your email"
-                className={`form-input ${errors.email ? 'border-error-500' : ''}`}
-                {...register('email')}
-              />
-              {errors.email && (
-                <p className="form-error">{errors.email.message}</p>
-              )}
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="form-label">
-                Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  className={`form-input pr-12 ${errors.password ? 'border-error-500' : ''}`}
-                  {...register('password')}
-                />
-                <button
-                  type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
+        <Suspense fallback={
+          <div className="w-full max-w-md">
+            <div className="animate-pulse">
+              <div className="mb-8 h-8 bg-gray-200 rounded"></div>
+              <div className="space-y-4">
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
               </div>
-              {errors.password && (
-                <p className="form-error">{errors.password.message}</p>
-              )}
             </div>
-
-            {/* Remember me and Forgot password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-border text-primary-500 focus:ring-primary-500"
-                />
-                <Label
-                  htmlFor="remember-me"
-                  className="text-sm text-muted-foreground"
-                >
-                  Remember me
-                </Label>
-              </div>
-
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm font-medium text-primary-600 transition-colors hover:text-primary-700"
-              >
-                Forgot password?
-              </Link>
-            </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="h-12 w-full text-base"
-            >
-              {isLoading ? (
-                <>
-                  <div className="loading-spinner mr-3 h-5 w-5"></div>
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  Sign in
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </>
-              )}
-            </Button>
-          </form>
-
-          {/* Register Link */}
-          <div className="mt-8 text-center">
-            <p className="body-small text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link
-                href="/auth/register"
-                className="font-medium text-primary-600 transition-colors hover:text-primary-700"
-              >
-                Create your account
-              </Link>
-            </p>
           </div>
-
-          {/* Security Notice */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-muted-foreground">
-            <Shield className="h-4 w-4" />
-            <span className="caption">
-              Your data is protected with enterprise-grade security
-            </span>
-          </div>
-        </div>
+        }>
+          <LoginFormContent />
+        </Suspense>
       </div>
     </div>
   );

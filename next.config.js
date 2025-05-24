@@ -12,6 +12,12 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    // Enable serverComponentsExternalPackages for better package compatibility
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma', 'googleapis'],
+    // Enable app directory
+    appDir: true,
+  },
   images: {
     domains: [
       'localhost',
@@ -74,10 +80,21 @@ const nextConfig = {
         tls: false,
       };
     }
+    
+    // Handle node modules that need to be processed
+    config.module.rules.push({
+      test: /\.node$/,
+      use: 'node-loader',
+    });
+    
     return config;
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    // Ensure environment variables are available at build time
+    DATABASE_URL: process.env.DATABASE_URL || '',
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || '',
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
   },
   poweredByHeader: false,
   compress: true,
@@ -85,6 +102,8 @@ const nextConfig = {
   httpAgentOptions: {
     keepAlive: true,
   },
+  // Output configuration for better compatibility
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

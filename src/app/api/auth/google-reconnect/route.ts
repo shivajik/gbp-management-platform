@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+// Force dynamic runtime
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // GET /api/auth/google-reconnect - Initiate Google reconnection
 export async function GET(request: NextRequest) {
   try {
