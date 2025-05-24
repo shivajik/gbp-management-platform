@@ -1,8 +1,8 @@
+'use client';
+
 // Force dynamic rendering - this page handles form submissions and API calls
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';

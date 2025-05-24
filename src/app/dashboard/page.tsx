@@ -1,8 +1,8 @@
+'use client';
+
 // Force dynamic rendering - this page requires authentication
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';

@@ -17,8 +17,6 @@ const nextConfig = {
     serverComponentsExternalPackages: ['@prisma/client', 'prisma', 'googleapis'],
     // Remove appDir as it's deprecated in Next.js 14
   },
-  // Disable static generation for pages that require runtime data
-  generateStaticParams: false,
   images: {
     domains: [
       'localhost',
