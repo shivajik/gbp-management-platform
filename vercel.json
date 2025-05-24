@@ -14,5 +14,16 @@
     "env": {
       "SKIP_ENV_VALIDATION": "1"
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Deployment-Version",
+          "value": "v1.1-build-fixes"
+        }
+      ]
+    }
+  ]
 } 
