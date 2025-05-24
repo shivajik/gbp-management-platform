@@ -1,0 +1,693 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// ============================================================================
+
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  emailVerified     DateTime?
+  name              String
+  avatar            String?
+  password          String?
+  role              UserRole           @default(BUSINESS_OWNER)
+  isActive          Boolean            @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // Relations
+  organizationId    String?
+  organization      Organization?      @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  ownedOrganization Organization?      @relation("OrganizationOwner")
+  accounts          Account[]
+  sessions          Session[]
+  teamMemberships   TeamMember[]
+  posts             Post[]
+  reviewResponses   ReviewResponse[]
+  questionAnswers   QuestionAnswer[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  userBusinessProfiles UserBusinessProfile[]
+  templates         Template[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================================
+// ORGANIZATION & TEAM MANAGEMENT
+// ============================================================================
+
+model Organization {
+  id               String               @id @default(cuid())
+  name             String
+  type             OrganizationType     @default(BUSINESS)
+  ownerId          String               @unique
+  settings         Json                 @default("{}")
+  subscriptionPlan SubscriptionPlan     @default(FREE)
+  subscriptionId   String?
+  billingEmail     String?
+  isActive         Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  // Relations
+  owner            User                 @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members          User[]
+  teamMembers      TeamMember[]
+  businessProfiles BusinessProfile[]
+  subscriptions    Subscription[]
+  invoices         Invoice[]
+  apiKeys          ApiKey[]
+
+  @@map("organizations")
+}
+
+model TeamMember {
+  id                String             @id @default(cuid())
+  userId            String
+  organizationId    String
+  role              TeamRole           @default(MEMBER)
+  permissions       Json               @default("[]")
+  businessProfiles  String[]           @default([])
+  invitedBy         String
+  invitedAt         DateTime           @default(now())
+  joinedAt          DateTime?
+  status            TeamMemberStatus   @default(PENDING)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@map("team_members")
+}
+
+// ============================================================================
+// BUSINESS PROFILES & LOCATIONS
+// ============================================================================
+
+model BusinessProfile {
+  id               String              @id @default(cuid())
+  googleBusinessId String              @unique
+  name             String
+  description      String?             @db.Text
+  phoneNumber      String?
+  website          String?
+  email            String?
+  isVerified       Boolean             @default(false)
+  status           BusinessStatus      @default(ACTIVE)
+  lastSyncAt       DateTime?
+  organizationId   String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  // JSON fields for complex data
+  address          Json                // Address information
+  categories       Json                @default("[]") // Business categories
+  attributes       Json                @default("[]") // Business attributes
+
+  // Relations
+  organization     Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  businessHours    BusinessHours[]
+  photos           BusinessPhoto[]
+  posts            Post[]
+  reviews          Review[]
+  questions        Question[]
+  insights         BusinessInsights[]
+  userBusinessProfiles UserBusinessProfile[]
+  templates        Template[]
+
+  @@map("business_profiles")
+}
+
+model BusinessHours {
+  id                String          @id @default(cuid())
+  businessProfileId String
+  dayOfWeek         DayOfWeek
+  openTime          String?         // HH:MM format
+  closeTime         String?         // HH:MM format
+  isClosed          Boolean         @default(false)
+  isHoliday         Boolean         @default(false)
+  holidayName       String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([businessProfileId, dayOfWeek])
+  @@map("business_hours")
+}
+
+model BusinessPhoto {
+  id                String          @id @default(cuid())
+  businessProfileId String
+  googlePhotoId     String?         @unique
+  url               String
+  type              PhotoType       @default(OTHER)
+  description       String?
+  width             Int?
+  height            Int?
+  order             Int             @default(0)
+  isActive          Boolean         @default(true)
+  uploadedAt        DateTime        @default(now())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+
+  @@map("business_photos")
+}
+
+// User-selected business profiles for granular access control
+model UserBusinessProfile {
+  id                String          @id @default(cuid())
+  userId            String
+  businessProfileId String
+  addedAt           DateTime        @default(now())
+  isActive          Boolean         @default(true)
+  permissions       Json            @default("[]") // Custom permissions for this specific listing
+  
+  // Relations
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessProfile   BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessProfileId])
+  @@map("user_business_profiles")
+}
+
+// ============================================================================
+// POSTS & CONTENT MANAGEMENT
+// ============================================================================
+
+model Post {
+  id                String        @id @default(cuid())
+  businessProfileId String
+  googlePostId      String?       @unique
+  content           String        @db.Text
+  callToAction      Json?         // CTA information
+  scheduledAt       DateTime?
+  publishedAt       DateTime?
+  status            PostStatus    @default(DRAFT)
+  failureReason     String?
+  createdBy         String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  creator         User            @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  images          PostImage[]
+  metrics         PostMetrics?
+
+  @@map("posts")
+}
+
+model PostImage {
+  id          String   @id @default(cuid())
+  postId      String
+  url         String
+  alt         String?
+  width       Int?
+  height      Int?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_images")
+}
+
+model PostMetrics {
+  id          String   @id @default(cuid())
+  postId      String   @unique
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  engagement  Int      @default(0)
+  shares      Int      @default(0)
+  saves       Int      @default(0)
+  lastUpdated DateTime @default(now())
+
+  // Relations
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_metrics")
+}
+
+// ============================================================================
+// POST TEMPLATES
+// ============================================================================
+
+model Template {
+  id                String            @id @default(cuid())
+  businessProfileId String
+  name              String
+  description       String?           @db.Text
+  content           String            @db.Text
+  postType          PostTemplateType  @default(UPDATE)
+  callToAction      Json?             @default("{}")
+  tags              String[]          @default([])
+  isFavorite        Boolean           @default(false)
+  usageCount        Int               @default(0)
+  createdBy         String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  businessProfile   BusinessProfile   @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  creator           User              @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@map("templates")
+}
+
+// ============================================================================
+// REVIEWS & REPUTATION MANAGEMENT
+// ============================================================================
+
+model Review {
+  id                String          @id @default(cuid())
+  googleReviewId    String          @unique
+  businessProfileId String
+  reviewerName      String
+  reviewerPhotoUrl  String?
+  rating            Int
+  content           String?         @db.Text
+  publishedAt       DateTime
+  status            ReviewStatus    @default(NEW)
+  sentiment         ReviewSentiment @default(NEUTRAL)
+  isVerified        Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile  @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  response        ReviewResponse?
+
+  @@map("reviews")
+}
+
+model ReviewResponse {
+  id          String   @id @default(cuid())
+  reviewId    String   @unique
+  content     String   @db.Text
+  publishedAt DateTime @default(now())
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  review  Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  creator User   @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@map("review_responses")
+}
+
+// ============================================================================
+// Q&A MANAGEMENT
+// ============================================================================
+
+model Question {
+  id                String          @id @default(cuid())
+  googleQuestionId  String          @unique
+  businessProfileId String
+  questionText      String          @db.Text
+  askerName         String?
+  publishedAt       DateTime
+  status            QuestionStatus  @default(UNANSWERED)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile  @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+  answer          QuestionAnswer?
+
+  @@map("questions")
+}
+
+model QuestionAnswer {
+  id          String   @id @default(cuid())
+  questionId  String   @unique
+  content     String   @db.Text
+  publishedAt DateTime @default(now())
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  creator  User     @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+
+  @@map("question_answers")
+}
+
+// ============================================================================
+// ANALYTICS & INSIGHTS
+// ============================================================================
+
+model BusinessInsights {
+  id                String          @id @default(cuid())
+  businessProfileId String
+  date              DateTime
+  period            AnalyticsPeriod @default(DAILY)
+  
+  // View metrics
+  totalViews        Int             @default(0)
+  directViews       Int             @default(0)
+  discoveryViews    Int             @default(0)
+  brandedViews      Int             @default(0)
+  
+  // Search metrics
+  totalSearches     Int             @default(0)
+  directSearches    Int             @default(0)
+  discoverySearches Int             @default(0)
+  brandedSearches   Int             @default(0)
+  
+  // Action metrics
+  websiteClicks     Int             @default(0)
+  phoneCallClicks   Int             @default(0)
+  directionRequests Int             @default(0)
+  photoViews        Int             @default(0)
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  businessProfile BusinessProfile @relation(fields: [businessProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([businessProfileId, date, period])
+  @@map("business_insights")
+}
+
+// ============================================================================
+// NOTIFICATIONS & ACTIVITY
+// ============================================================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  data      Json?            @default("{}")
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id          String       @id @default(cuid())
+  userId      String
+  action      ActivityType
+  resource    String       // e.g., "business_profile", "post", "review"
+  resourceId  String
+  description String       @db.Text
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?        @default("{}")
+  createdAt   DateTime     @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+// ============================================================================
+// BILLING & SUBSCRIPTIONS
+// ============================================================================
+
+model Subscription {
+  id             String           @id @default(cuid())
+  organizationId String
+  stripeId       String?          @unique
+  plan           SubscriptionPlan
+  status         SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean       @default(false)
+  trialStart     DateTime?
+  trialEnd       DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  organizationId String
+  subscriptionId String?
+  stripeId       String?       @unique
+  number         String        @unique
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
+  status         InvoiceStatus @default(PENDING)
+  dueDate        DateTime
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@map("invoices")
+}
+
+// ============================================================================
+// API & INTEGRATIONS
+// ============================================================================
+
+model ApiKey {
+  id             String    @id @default(cuid())
+  organizationId String
+  name           String
+  keyHash        String    @unique
+  permissions    Json      @default("[]")
+  lastUsedAt     DateTime?
+  expiresAt      DateTime?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  ADMIN
+  AGENCY_OWNER
+  AGENCY_MEMBER
+  BUSINESS_OWNER
+  BUSINESS_MEMBER
+}
+
+enum OrganizationType {
+  AGENCY
+  BUSINESS
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+}
+
+enum TeamMemberStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum BusinessStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+  PENDING_VERIFICATION
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum PhotoType {
+  LOGO
+  COVER
+  INTERIOR
+  EXTERIOR
+  FOOD_AND_DRINK
+  MENU
+  PRODUCT
+  TEAM
+  OTHER
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+  DELETED
+}
+
+enum PostTemplateType {
+  UPDATE
+  EVENT
+  OFFER
+}
+
+enum ReviewStatus {
+  NEW
+  RESPONDED
+  FLAGGED
+  ARCHIVED
+}
+
+enum ReviewSentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum QuestionStatus {
+  UNANSWERED
+  ANSWERED
+  ARCHIVED
+}
+
+enum NotificationType {
+  NEW_REVIEW
+  NEW_QUESTION
+  POST_FAILED
+  POST_PUBLISHED
+  TEAM_INVITE
+  BUSINESS_PROFILE_UPDATED
+  SUBSCRIPTION_UPDATED
+  SYSTEM_ALERT
+}
+
+enum ActivityType {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  CONNECT_GOOGLE
+  DISCONNECT_GOOGLE
+  PUBLISH_POST
+  RESPOND_REVIEW
+  ANSWER_QUESTION
+}
+
+enum AnalyticsPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum SubscriptionPlan {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+} 
